@@ -16,12 +16,12 @@
         ></item>
     <item
         android:id = "@+id/bottom_survey_profile"
-        android:enabeld = "true"
+        android:enabled = "true"
         android:icon = "@drawable/ic_person_black_24dp"
         android:title = "프로필"
         ></item>
     <item
-        android:id = "@+id/bottom_survey_settings"
+        android:id = "@+id/bottom_survey_setting"
         android:enabled = "true"
         android:icon = "@drawable/ic_settings_black_24dp"
         android:title = "옵션"
