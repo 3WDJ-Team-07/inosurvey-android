@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">InoSurvey</string>
+    <string name="bottom_survey_list">bsl</string>
+    <string name="bottom_survey_market">bsm</string>
+    <string name="bottom_survey_wallet">bsw</string>
+    <string name="bottom_survey_option">bso</string>
+</resources>

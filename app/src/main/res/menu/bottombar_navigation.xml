@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:anroid="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id = "@+id/bottom_survey_list"
+        android:enabled="true"
+        android:icon="@drawable/ic_assignment_black_24dp"
+        android:title="설문"
+        ></item>
+    <item
+        android:id = "@+id/bottom_survey_market"
+        android:enabled = "true"
+        android:icon = "@drawable/ic_shopping_cart_black_24dp"
+        android:title = "마켓"
+        ></item>
+    <item
+        android:id = "@+id/bottom_survey_profile"
+        android:enabeld = "true"
+        android:icon = "@drawable/ic_person_black_24dp"
+        android:title = "프로필"
+        ></item>
+    <item
+        android:id = "@+id/bottom_survey_settings"
+        android:enabled = "true"
+        android:icon = "@drawable/ic_settings_black_24dp"
+        android:title = "옵션"
+        ></item>
+</menu>
