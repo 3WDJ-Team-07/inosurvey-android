@@ -1,5 +1,6 @@
 package xyz.inosurvey.inosurvey.ItemData;
 
+//DataSet Class
 public class MarketData{
     public String productText;
     public String coinText;

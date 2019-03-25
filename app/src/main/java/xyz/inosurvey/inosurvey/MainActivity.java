@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -21,6 +22,10 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
         loadFragment(new SurveyListFragment());
         bottomNavigationView = findViewById(R.id.bottom_navigation);
+        //액션바 제목 지정
+        final ActionBar ab = getSupportActionBar();
+        ab.setTitle("설문 리스트");
+
         //textView = findViewById(R.id.textView);
 
         //바텀 네비게이션 이벤트 리스너
@@ -29,22 +34,27 @@ public class MainActivity extends AppCompatActivity{
             //메뉴 아이템 id를 받아와서 case 조건에 맞는 fragment 보여주기
             public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
                 Fragment fragment = null;
+
                 switch(menuItem.getItemId()){
                     //설문 리스트
                     case R.id.bottom_survey_list:
                         fragment = new SurveyListFragment();
+                        ab.setTitle("설문 리스트");
                         break;
                     //마켓
                     case R.id.bottom_survey_market:
                         fragment = new MarketFragment();
+                        ab.setTitle("상품 마켓");
                         break;
                     //프로필
                     case R.id.bottom_survey_profile:
                         fragment = new ProfileFragment();
+                        ab.setTitle("마이 페이지");
                         break;
                     //세팅
                     case R.id.bottom_survey_setting:
                         fragment = new SettingFragment();
+                        ab.setTitle("옵션");
                         break;
                 }
                 return loadFragment(fragment);

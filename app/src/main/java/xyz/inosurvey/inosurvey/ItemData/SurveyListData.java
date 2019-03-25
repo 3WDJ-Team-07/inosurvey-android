@@ -1,5 +1,7 @@
 package xyz.inosurvey.inosurvey.ItemData;
 
+
+//DataSet Class
 public class SurveyListData {
     public String surveyTitleText,coinText,timeText, surveyCoinText, surveyTimeText;
 
