@@ -42,9 +42,9 @@ public class MainActivity extends AppCompatActivity{
                         ab.setTitle("설문 리스트");
                         break;
                     //마켓
-                    case R.id.bottom_survey_market:
-                        fragment = new MarketFragment();
-                        ab.setTitle("상품 마켓");
+                    case R.id.bottom_survey_donation:
+                        fragment = new DonationFragment();
+                        ab.setTitle("기부 리스트");
                         break;
                     //프로필
                     case R.id.bottom_survey_profile:

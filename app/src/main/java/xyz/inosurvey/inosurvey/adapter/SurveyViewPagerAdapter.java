@@ -8,9 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 
 import xyz.inosurvey.inosurvey.SurveyActivity;
-import xyz.inosurvey.inosurvey.SurveyCheckboxFragment;
-import xyz.inosurvey.inosurvey.SurveyIntroFragment;
-import xyz.inosurvey.inosurvey.SurveyRadioFragment;
+import xyz.inosurvey.inosurvey.SurveyFragment;
 
 public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
 
@@ -20,7 +18,6 @@ public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
     //    fragmentArray.add(fragment);
     //}
     ArrayList<Integer> pageNum = new ArrayList<>();
-    public static int controlPosition = 0; //페이지 포지션 컨트롤 변수
 
     public SurveyViewPagerAdapter(FragmentManager fm, ArrayList<Integer> num){
         super(fm);
@@ -30,40 +27,14 @@ public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
 
         @Override
         public Fragment getItem (int position) {
-            Fragment drawFragment;
-            System.out.println(position+ "position");
-            position = pageNum.get(controlPosition);
-            System.out.println(position + "abcd");
-            if(position == 0){
-                drawFragment = new SurveyIntroFragment();
-                return drawFragment;
-            }
-            if(position>=1) {
-                if (position == 1) {
-                    drawFragment = new SurveyRadioFragment();
-                    return drawFragment;
-                } else if (position == 2) {
-                    drawFragment = new SurveyCheckboxFragment();
-                    return drawFragment;
-                }
-            }
-            return null;
-        /*switch(position){
-            case 0:
-                return new SurveyIntroFragment();
-            case 1:
-                return new SurveyRadioFragment();
-            case 2:
-                return new SurveyCheckboxFragment();
-            default :
-                return null;
-        }*/
-        //return null;
+            SurveyFragment fragment = new SurveyFragment();
+
+            return fragment;
     }
 
         @Override
         public int getCount () {
-        return SurveyActivity.setCount;
+        return pageNum.size();
     }
 
 

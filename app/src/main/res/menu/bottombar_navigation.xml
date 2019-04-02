@@ -9,10 +9,10 @@
         android:title="설문"
         ></item>
     <item
-        android:id = "@+id/bottom_survey_market"
+        android:id = "@+id/bottom_survey_donation"
         android:enabled = "true"
         android:icon = "@drawable/ic_shopping_cart_black_24dp"
-        android:title = "마켓"
+        android:title = "기부"
         ></item>
     <item
         android:id = "@+id/bottom_survey_profile"

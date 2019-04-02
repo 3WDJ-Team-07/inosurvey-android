@@ -28,7 +28,6 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
     //viewHolder 클래스 정의
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        private Context context;
         public TextView surveyTitleTextView, coinTextView, timeTextView, surveyCoinTextView, surveyTimeTextView;
 
         //아이템에 들어갈 View를 받은 후 그 View 안에 있는 widget들을 초기화한다.
@@ -52,7 +51,6 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
 
             //View 객체 v에서 context를 받아와 activity start
             v.getContext().startActivity(intent);
-
         }
     }
 

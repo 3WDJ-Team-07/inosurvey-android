@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity"/>
         <activity android:name=".SurveyActivity"/>
+        <activity android:name=".DonationActivity"/>
 
         <activity android:name = ".LoginActivity">
         <intent-filter>
