@@ -1,4 +1,4 @@
-package xyz.inosurvey.inosurvey;
+package xyz.inosurvey.inosurvey.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,12 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.zip.Inflater;
+import xyz.inosurvey.inosurvey.R;
 
-public class ProfileFragment extends Fragment {
+public class SettingFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+        View v = inflater.inflate(R.layout.fragment_setting,container,false);
 
-        return inflater.inflate(R.layout.fragment_profile, null);
+        return v;
     }
 }

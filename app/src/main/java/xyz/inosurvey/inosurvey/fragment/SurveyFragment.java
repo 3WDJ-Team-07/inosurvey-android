@@ -1,4 +1,4 @@
-package xyz.inosurvey.inosurvey;
+package xyz.inosurvey.inosurvey.fragment;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -6,16 +6,17 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
 import xyz.inosurvey.inosurvey.ItemData.SurveyListData;
+import xyz.inosurvey.inosurvey.SurveyActivity;
+import xyz.inosurvey.inosurvey.R;
 
 public class SurveyFragment extends Fragment {
 
@@ -49,6 +50,22 @@ public class SurveyFragment extends Fragment {
         radioButton1 = (RadioButton) v.findViewById(R.id.radioButton1);
         titleContentTextView = (TextView) v.findViewById(R.id.titleContentTextView);
         titleTextView = (TextView) v.findViewById(R.id.titleTextVIew);
+
+        editText.setHorizontallyScrolling(false);
+        editText.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View view, MotionEvent event) {
+                // TODO Auto-generated method stub
+                if (view.getId() ==R.id.editText) {
+                    view.getParent().requestDisallowInterceptTouchEvent(true);
+                    switch (event.getAction()&MotionEvent.ACTION_MASK){
+                        case MotionEvent.ACTION_UP:
+                            view.getParent().requestDisallowInterceptTouchEvent(false);
+                            break;
+                    }
+                }
+                return false;
+            }
+        });
 
         cbArray.add(checkBox1);
         cbArray.add(checkBox2);

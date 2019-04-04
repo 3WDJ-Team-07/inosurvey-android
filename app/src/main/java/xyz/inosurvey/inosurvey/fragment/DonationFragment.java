@@ -1,4 +1,4 @@
-package xyz.inosurvey.inosurvey;
+package xyz.inosurvey.inosurvey.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import xyz.inosurvey.inosurvey.ItemData.*;
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.adapter.DonationAdapter;
+import xyz.inosurvey.inosurvey.R;
 
 public class DonationFragment extends Fragment {
 
@@ -41,7 +42,7 @@ public class DonationFragment extends Fragment {
         donationAdapter = new DonationAdapter(donationDataSet);
         donationView.setAdapter(donationAdapter);
 
-        donationDataSet.add(new DonationData(R.drawable.bbadda, "??? :훠훠훠줴뮈있눈청원이군요", "그래서줜쥉화자는겁니꽈?", "이 기부처에 x이노 기부하셨습니다"));
+        donationDataSet.add(new DonationData(R.drawable.bbadda, "기부제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
         donationDataSet.add(new DonationData(R.drawable.verysadpepe, "기부 제목", "기부처", "얼마기부했냐?"));
         donationDataSet.add(new DonationData(R.drawable.qualitypepe, "기부 제목", "기부처", "얼마기부했냐?"));
         donationDataSet.add(new DonationData(R.drawable.birthdaypepe, "기부 제목", "기부처", "얼마기부했냐?"));
