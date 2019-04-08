@@ -1,6 +1,5 @@
 package xyz.inosurvey.inosurvey.fragment;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,7 +13,6 @@ import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import java.util.ArrayList;
-import xyz.inosurvey.inosurvey.ItemData.SurveyListData;
 import xyz.inosurvey.inosurvey.SurveyActivity;
 import xyz.inosurvey.inosurvey.R;
 

@@ -8,7 +8,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import java.util.ArrayList;
 
 import xyz.inosurvey.inosurvey.SurveyActivity;
-import xyz.inosurvey.inosurvey.SurveyFragment;
+import xyz.inosurvey.inosurvey.fragment.SurveyFragment;
 
 public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
 

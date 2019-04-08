@@ -39,10 +39,11 @@ public class MainActivity extends AppCompatActivity{
 
         ComponentName componentName = new ComponentName(this, SurveyJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)
-                .setRequiresCharging(true)
+                .setRequiresCharging(false)
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                 .setPersisted(true)
                 .setPeriodic(15 * 60 * 1000)
+                .setOverrideDeadline(0)
                 .build();
 
         JobScheduler scheduler = (JobScheduler) getSystemService(JOB_SCHEDULER_SERVICE);

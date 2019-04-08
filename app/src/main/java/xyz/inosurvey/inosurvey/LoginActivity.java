@@ -50,8 +50,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(preferences !=null){
             ActivityCompat.finishAffinity(this);
         }
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-
+        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         loginButton= findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
 

@@ -43,11 +43,11 @@ public class DonationFragment extends Fragment {
         donationView.setAdapter(donationAdapter);
 
         donationDataSet.add(new DonationData(R.drawable.bbadda, "기부제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
-        donationDataSet.add(new DonationData(R.drawable.verysadpepe, "기부 제목", "기부처", "얼마기부했냐?"));
-        donationDataSet.add(new DonationData(R.drawable.qualitypepe, "기부 제목", "기부처", "얼마기부했냐?"));
-        donationDataSet.add(new DonationData(R.drawable.birthdaypepe, "기부 제목", "기부처", "얼마기부했냐?"));
-        donationDataSet.add(new DonationData(R.drawable.violetpepe, "기부 제목", "기부처", "얼마기부했냐?"));
-        donationDataSet.add(new DonationData(R.drawable.lovepepe, "기부 제목", "기부처", "얼마기부했냐?"));
+        donationDataSet.add(new DonationData(R.drawable.verysadpepe, "기부 제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
+        donationDataSet.add(new DonationData(R.drawable.qualitypepe, "기부 제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
+        donationDataSet.add(new DonationData(R.drawable.birthdaypepe, "기부 제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
+        donationDataSet.add(new DonationData(R.drawable.violetpepe, "기부 제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
+        donationDataSet.add(new DonationData(R.drawable.lovepepe, "기부 제목", "기부처", "이 기부처에 x이노 기부하셨습니다"));
 
         //GetData g = new GetData();
         //g.getJson("http://172.26.3.14:8000/generateToken", "post");
