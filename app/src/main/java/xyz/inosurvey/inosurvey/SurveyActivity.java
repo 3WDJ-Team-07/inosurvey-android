@@ -25,7 +25,7 @@ public class SurveyActivity extends AppCompatActivity {
     //public static final int INTRO_PAGE = 0;
     //public static final int RADIO_PAGE = 1;
     //public static final int CHECK_PAGE = 2;
-    ArrayList<Integer> pageArray = new ArrayList<>();   //0=소개, 1=라디오 2=체크 3=주관식
+    ArrayList<Integer> pageArray = new ArrayList<>();   //0=소개, 1=라디오 2=체크 3=별점 4=주관식
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,6 +38,7 @@ public class SurveyActivity extends AppCompatActivity {
         pageArray.add(1);
         pageArray.add(2);
         pageArray.add(3);
+        pageArray.add(4);
 
         viewPager = findViewById(R.id.viewPager);
         previousButton = findViewById(R.id.previousButton);

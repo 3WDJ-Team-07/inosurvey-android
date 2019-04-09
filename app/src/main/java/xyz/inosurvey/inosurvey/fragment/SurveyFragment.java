@@ -1,9 +1,11 @@
 package xyz.inosurvey.inosurvey.fragment;
 
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.SurveyActivity;
@@ -21,10 +24,13 @@ public class SurveyFragment extends Fragment {
     CheckBox checkBox1, checkBox2, checkBox3, checkBox4, checkBox5 ,checkBox6;
     RadioButton radioButton1, radioButton2, radioButton3, radioButton4, radioButton5;
     TextView titleContentTextView, titleTextView;
+    RatingBar ratingBar;
     EditText editText;
+    float getRaitngBarScore;
     private ArrayList<CheckBox> cbArray = new ArrayList<>();
     private ArrayList<RadioButton> rbArray = new ArrayList<>();
     private SurveyFragment sf;
+    private final String TAG = "SurveyFragment";
 
     public SurveyFragment() {
     }
@@ -48,6 +54,18 @@ public class SurveyFragment extends Fragment {
         radioButton1 = (RadioButton) v.findViewById(R.id.radioButton1);
         titleContentTextView = (TextView) v.findViewById(R.id.titleContentTextView);
         titleTextView = (TextView) v.findViewById(R.id.titleTextVIew);
+        ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
+
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            @Override
+            public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {
+                if(ratingBar.getRating()<1.0f){
+                    ratingBar.setRating(1);
+                }
+                getRaitngBarScore = rating;
+                Log.d(TAG, "rating = " + getRaitngBarScore);
+            }
+        });
 
         editText.setHorizontallyScrolling(false);
         editText.setOnTouchListener(new View.OnTouchListener() {
@@ -88,17 +106,21 @@ public class SurveyFragment extends Fragment {
             if(SurveyActivity.exPo != 0)
                 titleContentTextView.setVisibility(View.GONE);
             if(SurveyActivity.exPo == 1){
-                titleTextView.setText("1번 질문");
+                titleTextView.setText(SurveyActivity.exPo +"번 질문");
                 for (int i = 0; i <= 3; i++) {
                     cbArray.get(i).setVisibility(View.VISIBLE);
                 }
             }else if(SurveyActivity.exPo == 2){
-                titleTextView.setText("2번 질문");
+                titleTextView.setText(SurveyActivity.exPo + "번 질문");
                 for(int i =0; i<=2; i++){
                     rbArray.get(i).setVisibility(View.VISIBLE);
                 }
             }else if(SurveyActivity.exPo == 3){
-                titleTextView.setText("3번 질문");
+                titleTextView.setText(SurveyActivity.exPo + "번 질문");
+                ratingBar.setVisibility(View.VISIBLE);
+            }
+            else if(SurveyActivity.exPo == 4){
+                titleTextView.setText(SurveyActivity.exPo + "번 질문");
                 editText.setVisibility(View.VISIBLE);
             }
         }else{

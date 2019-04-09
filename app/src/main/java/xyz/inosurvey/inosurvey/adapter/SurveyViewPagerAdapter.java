@@ -28,7 +28,6 @@ public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
         @Override
         public Fragment getItem (int position) {
             SurveyFragment fragment = new SurveyFragment();
-
             return fragment;
     }
 
@@ -36,8 +35,4 @@ public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
         public int getCount () {
         return pageNum.size();
     }
-
-
-
-
 }
