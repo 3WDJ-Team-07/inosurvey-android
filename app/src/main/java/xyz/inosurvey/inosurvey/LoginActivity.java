@@ -1,6 +1,5 @@
 package xyz.inosurvey.inosurvey;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -104,15 +103,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         con.setRequestProperty("Accept","application/json");
                         con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
                         con.setReadTimeout(100000); //10초동안 서버로부터 반응없으면 에러
-                        System.out.println(idText + "flag1");
                         con.setConnectTimeout(15000); //접속하는 커넥션 타임 15초동안 접속안되면 접속안되는 것으로 간주 (ms)
-                        System.out.println(idText + "flag2");
                         con.setDoInput(true);
-                        System.out.println(idText + "flag3");
                         con.setDoOutput(true);
-                        System.out.println(idText + "flag4");
                         con.setUseCaches(false);
-                        System.out.println(idText + "flag5");
                         con.setDefaultUseCaches(false);
 
                         //jwtCookie = con.getHeaderField(COOKIES_HEADER);
@@ -124,7 +118,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                             }
                         }*/
 
-
                         OutputStream os = con.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                         writer.write("user_id="+idText +"&password="+pwText);
@@ -133,25 +126,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         writer.close();
                         os.close();
                         con.connect();
-
-                        //System.out.println(jwtCookies + "abab");
                         StringBuilder sb = new StringBuilder();
                         bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
-                        System.out.println("here2");
                         String json;
                         while ((json = bufferedReader.readLine()) != null) {
                             sb.append(json + "\n");
                         }
                         return sb.toString().trim();
                     } catch (Exception e) {
-                        System.out.println(e.getMessage() + ": err");
                         return null;
                     }
                 }
                 @Override
                 protected void onPostExecute(String result){
-                    //System.out.println("here3");
-                    System.out.println(result + " result");
                     if(result !=null) {
                         myJSON = result;
                         parseJSON();

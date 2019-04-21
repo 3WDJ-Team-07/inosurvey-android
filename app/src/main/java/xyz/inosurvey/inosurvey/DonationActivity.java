@@ -1,10 +1,14 @@
 package xyz.inosurvey.inosurvey;
 
+import android.app.job.JobParameters;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.text.InputType;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -12,11 +16,20 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
 public class DonationActivity  extends AppCompatActivity {
 
     ImageView imageView;
     TextView IntroTextView;
     Button donationButton;
+    EditText editText;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,7 +38,9 @@ public class DonationActivity  extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         IntroTextView = findViewById(R.id.introTextView);
         donationButton = findViewById(R.id.donationButton);
-
+        editText = findViewById(R.id.editText);
+        System.out.println("flag10");
+        //getJson("http://192.168.43.239:8000/test","POST");
         ActionBar ab = getSupportActionBar();
         ab.setTitle("기부하기");
         ab.setDisplayHomeAsUpEnabled(true);
@@ -36,11 +51,11 @@ public class DonationActivity  extends AppCompatActivity {
                 finishAlert();
             }
         });
-
     }
 
     public void finishAlert(){
         final EditText editText = new EditText(this);
+        editText.setInputType(InputType.TYPE_CLASS_NUMBER);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("알림");
@@ -60,7 +75,6 @@ public class DonationActivity  extends AppCompatActivity {
 
                     }
                 });
-
         builder.show();
     }
 
@@ -73,6 +87,71 @@ public class DonationActivity  extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public void getJson(String url, String method) {
+
+        class GetDataJson extends AsyncTask<String, Void, String> {
+            @Override
+            protected void onPreExecute(){
+
+            }
+            @Override
+            protected String doInBackground(String... params) {
+                System.out.println("flag20");
+                String uri = params[0];
+                System.out.println("flag30");
+                String method = params[1];
+                System.out.println("flag40");
+                if (params == null || params.length < 1)
+                    return null;
+                BufferedReader bufferedReader = null;
+                try {
+                    System.out.println("flag50");
+                    URL url = new URL(uri);
+                    System.out.println("flag60");
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    System.out.println("flag2");
+                    con.setRequestMethod(method);
+                    System.out.println("flag3");
+                    con.setRequestProperty("Accept", "application/json");
+                    System.out.println("flag4");
+                    con.setDoInput(true);
+                    System.out.println("flag5");
+                    con.setUseCaches(false);
+                    System.out.println("flag6");
+                    con.setDefaultUseCaches(false);
+                    System.out.println("flag7");
+                    con.setDoOutput(true);
+                    System.out.println("flag8");
+                    OutputStream os = con.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write("donation_id=1");
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                    con.connect();
+
+                    StringBuilder sb = new StringBuilder();
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                    return sb.toString().trim();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String result) {
+                String json = result;
+                System.out.println(json + "json1234");
+            }
+        }
+        GetDataJson g = new GetDataJson();
+        g.execute(url, method);
     }
 
 }

@@ -1,13 +1,11 @@
 package xyz.inosurvey.inosurvey.adapter;
 
-import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.ItemData.*;
 import xyz.inosurvey.inosurvey.MainActivity;
@@ -48,7 +46,6 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(v.getContext(), SurveyActivity.class);
-
             //View 객체 v에서 context를 받아와 activity start
             v.getContext().startActivity(intent);
         }

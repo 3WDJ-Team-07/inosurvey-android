@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -21,8 +23,8 @@ import xyz.inosurvey.inosurvey.fragment.DonationFragment;
 
 public class MainActivity extends AppCompatActivity{
 
+    SQLiteDatabase DB;
     BottomNavigationView bottomNavigationView;
-    TextView textView;
     public String TAG = "mainActivity";
 
     @SuppressLint("CutPasteId")
@@ -36,6 +38,25 @@ public class MainActivity extends AppCompatActivity{
         final ActionBar ab = getSupportActionBar();
         ab.setTitle("설문 리스트");
         //textView = findViewById(R.id.textView);
+
+        try{
+            DB = this.openOrCreateDatabase("InoSurvey", MODE_PRIVATE, null);
+            String createTableSQL = "CREATE TABLE IF NOT EXISTS "+"survey_list"+" ("
+                    +"toekn VARCHAR(20), "
+                    +"survey_id VARCHAR(20) NOT NULL, "
+                    +"survey_title VARCHAR(30) NOT NULL, "
+                    +"description VARCHAR(30) NOT NULL, "
+                    +"coin VARCHAR(20) NOT NULL, "
+                    +"closed_at VARCHAR(30) NOT NULL, "
+                    +"respondent_count VARCHAR(20) NOT NULL, "
+                    +"respondent_number VARCHAR(20) NOT NULL, "
+                    +"is_complate boolean NOT NULL, "
+                    +"theme VARCHAR(20) NOT NULL);";
+            DB.execSQL(createTableSQL);
+
+        }catch(SQLiteException e){
+            Log.e("",e.getMessage());
+        }
 
         ComponentName componentName = new ComponentName(this, SurveyJobService.class);
         JobInfo info = new JobInfo.Builder(123, componentName)

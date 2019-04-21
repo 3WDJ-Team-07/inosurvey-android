@@ -2,8 +2,10 @@ package xyz.inosurvey.inosurvey;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
@@ -114,10 +116,13 @@ public class SurveyJobService extends JobService {
             notificationChannel = new NotificationChannel("1", "push", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(notificationChannel);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, notificationChannel.getId());
+            Intent intent = new Intent(this, MainActivity.class);
+            PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             notificationBuilder.setAutoCancel(true)
                     .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle("제목")
-                    .setContentText("세부내용");
+                    .setContentText("세부내용")
+                    .setContentIntent(pendingIntent);
             notificationManager.notify(1, notificationBuilder.build());
         }//else if(Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP){
             //notificationChannel = new NotificationChannel("2", "push", )
