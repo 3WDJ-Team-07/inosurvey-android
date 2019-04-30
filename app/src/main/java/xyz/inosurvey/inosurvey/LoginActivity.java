@@ -28,28 +28,26 @@ import java.util.List;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Button loginButton;
-    private SharedPreferences preferences;
+    public static SharedPreferences token;
     private String idText = null;
     private String pwText = null;
-    private String TAG_MESSAGE = "message";
-    private String TAG_HEADER = "access_token";
     public String myJSON;
     private boolean mResult;
     private String jwtResult = null;
+    public static String jwtToken = null;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        //Intent intent = new Intent(this, MainActivity.class);
-        //startActivity(intent);
-        preferences = getSharedPreferences("jwt", MODE_PRIVATE);
-        System.out.println(preferences + "pre");
-        //String jwtHeader = preferences.getString("jwt", null);
-        if(preferences !=null){
+        System.out.println(jwtToken+  "jwtToken");
+        token = getSharedPreferences("jwt", MODE_PRIVATE);
+        jwtToken = token.getString("jwt", null);
+        System.out.println(jwtToken +  "alal");
+        if(jwtToken !=null){
             ActivityCompat.finishAffinity(this);
+            startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
-        startActivity(new Intent(getApplicationContext(), MainActivity.class));
         loginButton= findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
 
@@ -63,7 +61,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         idText = idEditText.getText().toString();
         pwText = pwEditText.getText().toString();
         GetData g = new GetData();
-        g.getJson("http://192.168.43.216:8000/api/user/login");
+        g.getJson("http://172.26.2.61:8000/api/user/login");
         //액티비티 destroy
         //ActivityCompat.finishAffinity(this);
     }
@@ -73,10 +71,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             JSONObject jsonObject = new JSONObject(myJSON);
             mResult = jsonObject.getBoolean("message");
             System.out.println(mResult + "mResult");
-            if(jsonObject.getJSONObject(TAG_HEADER).toString() != null) {
-                jwtResult = jsonObject.getJSONObject("access_token").toString();
-                System.out.println(jwtResult + "jwtResult");
-            }
+            jwtResult = jsonObject.getString("access_token");
+            System.out.println(jwtResult + "jwtResult");
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -141,11 +137,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 protected void onPostExecute(String result){
                     if(result !=null) {
                         myJSON = result;
+                        System.out.println(result+ "zxcvbn12345");
                         parseJSON();
                         setHeader(jwtResult);
                         loginAlert(mResult);
                     }
-
                 }
             }
             GetDataJson g = new GetDataJson();
@@ -153,7 +149,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         public void setHeader(String header){
-            SharedPreferences.Editor editor = preferences.edit();
+            SharedPreferences.Editor editor = token.edit();
             editor.putString("jwt", header);
             editor.commit();
         }

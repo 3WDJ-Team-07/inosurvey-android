@@ -2,26 +2,26 @@ package xyz.inosurvey.inosurvey.bean;
 
 public class User {
     int id;
-    String userId, password, email, nickName;
-    int gender, age, jobId;
+    String userId, email, nickName;
+    int gender, age, jobId, isDonator;
 
     public User(int id,
                 String userId,
-                String password,
                 String email,
                 String nickName,
                 int gender,
                 int age,
-                int jobId)
+                int jobId,
+                int isDonator    )
     {
         this.id = id;
         this.userId = userId;
-        this.password = password;
         this.email = email;
         this.nickName = nickName;
         this.gender = gender;
         this.age = age;
         this.jobId = jobId;
+        this.isDonator = isDonator;
     }
 
     public int getId() {
@@ -36,16 +36,8 @@ public class User {
         return userId;
     }
 
-    public void setUser_id(String userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public String getEmail() {
@@ -86,6 +78,14 @@ public class User {
 
     public void setjobId(int jobId) {
         this.jobId = jobId;
+    }
+
+    public int getIsDonator() {
+        return isDonator;
+    }
+
+    public void setIsDonator(int jobId) {
+        this.isDonator = isDonator;
     }
 
 

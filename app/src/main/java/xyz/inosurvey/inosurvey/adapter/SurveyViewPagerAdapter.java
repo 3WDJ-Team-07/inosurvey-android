@@ -3,6 +3,7 @@ package xyz.inosurvey.inosurvey.adapter;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import java.util.ArrayList;
@@ -10,18 +11,19 @@ import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.SurveyActivity;
 import xyz.inosurvey.inosurvey.fragment.SurveyFragment;
 
-public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
+public class SurveyViewPagerAdapter extends FragmentPagerAdapter {
 
     //private ArrayList<Fragment> fragmentArray;
 
     //public void addFragment(Fragment fragment){
     //    fragmentArray.add(fragment);
     //}
-    ArrayList<Integer> pageNum = new ArrayList<>();
 
-    public SurveyViewPagerAdapter(FragmentManager fm, ArrayList<Integer> num){
+    private int count;
+
+    public SurveyViewPagerAdapter(FragmentManager fm, int getCount){
         super(fm);
-        this.pageNum = num;
+        this.count = getCount;
     }
 
 
@@ -33,6 +35,6 @@ public class SurveyViewPagerAdapter extends FragmentStatePagerAdapter {
 
         @Override
         public int getCount () {
-        return pageNum.size();
+        return count;
     }
 }
