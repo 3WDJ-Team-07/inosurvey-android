@@ -1,5 +1,8 @@
 package xyz.inosurvey.inosurvey.fragment;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -9,25 +12,35 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import java.util.ArrayList;
+
+import xyz.inosurvey.inosurvey.DBHelper;
 import xyz.inosurvey.inosurvey.ItemData.SurveyListData;
 import xyz.inosurvey.inosurvey.MainActivity;
 import xyz.inosurvey.inosurvey.adapter.SurveyListAdapter;
 import xyz.inosurvey.inosurvey.R;
+import xyz.inosurvey.inosurvey.bean.SurveyList;
 
 public class SurveyListFragment extends Fragment {
 
     public MainActivity activity;
+    private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
+    private Context context;
+    private DBHelper dbHelper;
     private RecyclerView surveyListView;
     private RecyclerView.LayoutManager surveyListLayoutManager;
     private RecyclerView.Adapter surveyListAdapter;
     private ArrayList<SurveyListData> surveyListDataSet;
 
+    private int getId, getRespondentNumber, getRespondentCount, getIsCompleted, getIsSale;
+    private String getTitle, getCoin, getDescription, getStartedAt, getClosedAt, getBackgroundColor ;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
 
         //ActionBar ab = get
         //GetData g = new GetData();
         //g.getJson("http://172.26.2.232:8000/test");
         View v = inflater.inflate(R.layout.fragment_survey_list,container,false);
+        context = getActivity();
+        selectSurveyList(context);
         surveyListView = v.findViewById(R.id.surveyListView);
         surveyListView.setHasFixedSize(true);
 
@@ -37,15 +50,49 @@ public class SurveyListFragment extends Fragment {
         surveyListDataSet = new ArrayList<>();
         //http://dev.youngkyu.kr/36  context 관련 글 참고하기
         //https://arabiannight.tistory.com/entry/272 이거도
-        surveyListAdapter = new SurveyListAdapter(surveyListDataSet);
+        surveyListAdapter = new SurveyListAdapter(surveyListDataSet, surveyListArray);
         surveyListView.setAdapter(surveyListAdapter);
-
-        System.out.println(getActivity().getApplication() + "abcd");
-
-        surveyListDataSet.add(new SurveyListData("설문제목1","적립 코인","남은기간","xxx코인", "10일남음"));
-        surveyListDataSet.add(new SurveyListData("설문제목2","적립 코인","남은기간","xyy코인", "10일남음"));
-        surveyListDataSet.add(new SurveyListData("설문제목3","적립 코인","남은기간","xyz코인", "10일남음"));
+        addList();
 
         return v;
+    }
+
+    public void selectSurveyList(Context context){
+        DBHelper helper = new DBHelper(context, "survey_list", null, 1);
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String sql = "select * from survey_list where is_done=0";
+        Cursor cursor = db.rawQuery(sql, null);
+        SurveyList surveyList;
+        int i = 0;
+        while(cursor.moveToNext()){
+            getId = cursor.getInt(0);
+            getTitle = cursor.getString(1);
+            getDescription = cursor.getString(2);
+            getCoin = String.valueOf(cursor.getInt(3));
+            getStartedAt = cursor.getString(4);
+            getClosedAt = cursor.getString(5);
+            getRespondentCount = cursor.getInt(6);
+            getRespondentNumber = cursor.getInt(7);
+            getIsCompleted = cursor.getInt(8);
+            getIsSale = cursor.getInt(9);
+            getBackgroundColor = cursor.getString(10);
+            surveyList = new SurveyList(getId, getTitle, getDescription, getCoin, getStartedAt, getClosedAt,
+                    getRespondentCount, getRespondentNumber, getIsCompleted, getIsSale, getBackgroundColor);
+            surveyListArray.add(i, surveyList);
+            i++;
+        }
+        helper.close();
+        db.close();
+        cursor.close();
+    }
+
+    public void addList(){
+        String title, coin, closedAt;
+        for(int i =0; i<surveyListArray.size(); i++){
+            title = surveyListArray.get(i).getTitle();
+            coin = surveyListArray.get(i).getCoin();
+            closedAt = surveyListArray.get(i).getClosedAt();
+            surveyListDataSet.add(new SurveyListData(title,"적립 코인", "남은 기간", coin, closedAt));
+        }
     }
 }

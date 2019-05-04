@@ -5,7 +5,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.LinearGradient;
 import android.os.AsyncTask;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -39,7 +42,7 @@ public class SurveyJobService extends JobService {
     public boolean onStartJob(JobParameters params) {
         jobParams = params;
         Log.d(TAG, "job started");
-        postToken("http://172.26.2.61:8000/api/user/check", "POST");
+        postToken("http://172.26.2.186:8000/api/user/check", "POST");
         //doBackgroundWork(params);
         return true;
     }
@@ -93,7 +96,7 @@ public class SurveyJobService extends JobService {
                 System.out.println(getUserJSON + "opi");
                 if(getUserJSON != null) {
                     parseUserJSON();
-                    getSurveyFormJson("http://172.26.2.61:8000/api/response/index", "POST", jobParams);
+                    getSurveyFormJson("http://172.26.2.186:8000/api/response/index", "POST", jobParams);
                 }
             }
         }
@@ -146,10 +149,10 @@ public class SurveyJobService extends JobService {
                     jobFinished(params, true);
                 }else {
                     getSurveyListJSON = result;
-                    System.out.println(getSurveyListJSON + "getgetget");
-                    jobFinished(params, true);
+                    Log.d(TAG, "getSurveyListJSON's value = " + getSurveyListJSON);
+                    insertSurveyListJSON(getSurveyListJSON);
                     createNotification();
-                    Log.d(TAG, getSurveyListJSON);
+                    jobFinished(params, true);
                 }
             }
         }
@@ -170,19 +173,94 @@ public class SurveyJobService extends JobService {
         }
     }
 
-    public void parseSurveyListJSON(){
+    public void insertSurveyListJSON(String surveyListJSON){
+        int dbInsertResult;
         try{
-            JSONObject SurveyListJSONObject = new JSONObject(getSurveyListJSON);
+            int id;
+            String title, description, bgColor, startedAt, closedAt;
+            int coin, respondentNumber, respondentCount, isCompleted, isSale;
+
+            JSONObject surveyListJSONObject = new JSONObject(surveyListJSON);
+            Log.d(TAG, "insertSurveyListJSON's SurveyListJSONObject = " + surveyListJSONObject);
+            JSONArray surveyFormArray = surveyListJSONObject.getJSONArray("form");
+            if(surveyFormArray.length() == 0){
+                Log.d(TAG, "설문 리스트의 정보가 0입니다.");
+                return;
+            }
+            for(int i=0; i<=surveyFormArray.length(); i++) {
+                JSONObject surveyFormObject = surveyFormArray.getJSONObject(i);
+                id = surveyFormObject.getInt("id");
+                Log.d(TAG, "insertSurveyListJSON's get List in id = " +id);
+                title = surveyFormObject.getString("title");
+                coin = 500;
+                description = surveyFormObject.getString("description");
+                respondentNumber = surveyFormObject.getInt("respondent_number");
+                respondentCount = surveyFormObject.getInt("respondent_count");
+                isCompleted = surveyFormObject.getInt("is_completed");
+                isSale = surveyFormObject.getInt("is_sale");
+                startedAt = surveyFormObject.getString("started_at");
+                closedAt = surveyFormObject.getString("closed_at");
+                bgColor = surveyFormObject.getString("bgcolor");
+                dbInsertResult = insertSurveyList(id, title, description, coin, startedAt, closedAt, respondentCount, respondentNumber, isCompleted, isSale, bgColor);
+                Log.d(TAG, "dbInsertResult = " + dbInsertResult);
+            }
+
         }catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    public void insertSurveyList(){
+    public int searchSurveyID(int id){
         helper = new DBHelper(this, "survey_list", null, 1);
-        SQLiteDatabase db = helper.getWritableDatabase();
-        //db.execSQL();
+        SQLiteDatabase db = helper.getReadableDatabase();
+        String sql = "select * from survey_list where id = " +id;
+        Cursor cursor = db.rawQuery(sql, null);
+        Integer surveyID = null;
+        while(cursor.moveToNext()) {
+            surveyID = cursor.getInt(0);
+        }
+        int result;
+        if(surveyID != null){
+            result = 0;
+        }else
+            result = 1;
 
+        return result;
+    }
+
+    public int insertSurveyList(int id, String title, String description, int coin, String startedAt, String closedAt, int respondentCount, int respondentNumber, int isCompleted,int isSale, String bgColor){
+        try {
+            helper = new DBHelper(this, "survey_list", null, 1);
+            SQLiteDatabase db = helper.getWritableDatabase();
+            int result = searchSurveyID(id);
+            if(result == 0){
+                Log.d(TAG, "insertSuveyList :해당 " + id + " 는 이미 테이블에 존재합니다");
+                return 0;
+            }
+            ContentValues contentValues = new ContentValues();
+            contentValues.put("id", id);
+            contentValues.put("title", title);
+            contentValues.put("description", description);
+            contentValues.put("coin", coin);
+            contentValues.put("started_at", startedAt);
+            contentValues.put("closed_at", closedAt);
+            contentValues.put("respondent_count", respondentCount);
+            contentValues.put("respondent_number", respondentNumber);
+            contentValues.put("is_completed", isCompleted);
+            contentValues.put("is_sale", isSale);
+            contentValues.put("bg_color", bgColor);
+            contentValues.put("is_done", false);
+            Log.d(TAG, "insertSurveyList's situation");
+            //String sql = "INSERT INTO survey_list(id, title, description, coin, startedAt, closed_at, respondent_count, respondent_number, is_complated, is_sale, color, is_done) values("+ id + "," + title + "," +  description, coin, closedAt, respondentCount, respondentNumber, isComplated, isSale, color, false)"
+            db.insert("survey_list",  null, contentValues);
+            db.close();
+            helper.close();
+        }catch(Exception e){
+            Log.e(TAG ,"insertSurveyList's error");
+            e.printStackTrace();
+            return 0;
+        }
+        return 1;
     }
 
     /*private void doBackgroundWork(final JobParameters params){

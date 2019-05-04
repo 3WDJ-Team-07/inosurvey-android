@@ -3,14 +3,17 @@ package xyz.inosurvey.inosurvey;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,12 +30,13 @@ import java.util.List;
 
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener{
 
+    private String TAG = "LoginActivity";
     private Button loginButton;
     public static SharedPreferences token;
     private String idText = null;
     private String pwText = null;
     public String myJSON;
-    private boolean mResult;
+    private boolean loginResult;
     private String jwtResult = null;
     public static String jwtToken = null;
 
@@ -40,10 +44,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        System.out.println(jwtToken+  "jwtToken");
+        //System.out.println(jwtToken+  "jwtToken");
         token = getSharedPreferences("jwt", MODE_PRIVATE);
         jwtToken = token.getString("jwt", null);
-        System.out.println(jwtToken +  "alal");
+        Log.d(TAG, "jwtToken value = " + jwtToken);
         if(jwtToken !=null){
             ActivityCompat.finishAffinity(this);
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
@@ -61,7 +65,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         idText = idEditText.getText().toString();
         pwText = pwEditText.getText().toString();
         GetData g = new GetData();
-        g.getJson("http://172.26.2.61:8000/api/user/login");
+        g.getJson("http://172.26.2.186:8000/api/user/login");
         //액티비티 destroy
         //ActivityCompat.finishAffinity(this);
     }
@@ -69,10 +73,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private void parseJSON(){
         try {
             JSONObject jsonObject = new JSONObject(myJSON);
-            mResult = jsonObject.getBoolean("message");
-            System.out.println(mResult + "mResult");
+            loginResult = jsonObject.getBoolean("message");
+            Log.d(TAG, "parseJSON(loginResult : " + loginResult + ")" );
             jwtResult = jsonObject.getString("access_token");
-            System.out.println(jwtResult + "jwtResult");
+            Log.d(TAG, "parseJSON(jwtResult : " + loginResult + ")" );
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -93,6 +97,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
                     BufferedReader bufferedReader = null;
                     try {
+                        Log.d(TAG, "loginAsyncTask's situation");
                         URL url = new URL(uri);
                         HttpURLConnection con = (HttpURLConnection) url.openConnection();
                         con.setRequestMethod("POST");
@@ -113,7 +118,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                 System.out.println(cookies.split(";\\s")[0] + "abcd");
                             }
                         }*/
-
+                        Log.d(TAG, "loginAsyncTask's situation");
                         OutputStream os = con.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                         writer.write("user_id="+idText +"&password="+pwText);
@@ -135,12 +140,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
                 @Override
                 protected void onPostExecute(String result){
+                    Log.d(TAG, "loginAsyncTask's result = " + result);
                     if(result !=null) {
                         myJSON = result;
-                        System.out.println(result+ "zxcvbn12345");
                         parseJSON();
                         setHeader(jwtResult);
-                        loginAlert(mResult);
+                        loginAlert(loginResult);
+                    }else{
+                        Toast.makeText(getApplicationContext(), "로그인 정보 받아오지 못함", Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -157,7 +164,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     public void loginAlert(boolean getResult){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        System.out.println(mResult + "zxcv");
+        Log.d(TAG, "loginAlert's result = " + getResult);
         builder.setTitle("알림");
         if(getResult == true) {
             builder.setMessage("로그인 되었습니다");

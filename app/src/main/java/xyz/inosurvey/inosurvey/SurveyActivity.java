@@ -2,7 +2,9 @@ package xyz.inosurvey.inosurvey;
 
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +21,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -33,7 +36,10 @@ import java.net.URL;
 import java.util.ArrayList;
 
 import xyz.inosurvey.inosurvey.adapter.SurveyViewPagerAdapter;
+import xyz.inosurvey.inosurvey.bean.SurveyList;
 import xyz.inosurvey.inosurvey.fragment.SurveyFragment;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class SurveyActivity extends AppCompatActivity {
 
@@ -41,11 +47,11 @@ public class SurveyActivity extends AppCompatActivity {
     private Button previousButton, nextButton, finishButton, startButton;
     private TextView introTitleTextView, introContentTextView;
     private ActionBar ab;
+    private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
+    private int listPosition;
+    private String surveyTitle, surveyDescription, surveyCoin, surveyBackgrounColor;
+    private int surveyID, surveyIsSale;
     public static int controlPosition=-1;   //질문 json의 번호 컨트롤 0 = 첫번째 질문의 json 파싱
-    //public static final int INTRO_PAGE = 0;
-    //public static final int RADIO_PAGE = 1;
-    //public static final int CHECK_PAGE = 2;
-       //0=소개, 1=라디오 2=체크 3=별점 4=주관식
 
     private String getUserJSON;
     private int userID;
@@ -65,6 +71,7 @@ public class SurveyActivity extends AppCompatActivity {
     public ArrayList<Integer> questionIdArrayList = new ArrayList<>();
     public ArrayList<String> answerArrayList = new ArrayList<>();
 
+    //*************************************************************************************
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
@@ -77,15 +84,17 @@ public class SurveyActivity extends AppCompatActivity {
         finishButton = findViewById(R.id.finishButton);
         startButton = findViewById(R.id.startButton);
 
-        introTitleTextView.setText("에에에");
-        introContentTextView.setText("이겁니다");
+        getSurveyData();
+
+        introTitleTextView.setText(surveyTitle);
+        introContentTextView.setText(surveyDescription);
 
         //액션바 컨트롤
         ab = getSupportActionBar();
         ab.setTitle("설문소개");
         ab.setDisplayHomeAsUpEnabled(true);
 
-        getUserJson("http://172.26.2.61:8000/api/user/check", "POST");
+        getUserJson("http://172.26.2.186:8000/api/user/check", "POST");
 
         System.out.println(getUserJSON + "bbb");
 
@@ -105,11 +114,20 @@ public class SurveyActivity extends AppCompatActivity {
                     nextButton.setVisibility(View.GONE);
                 }else if(position == 1){
                     ab.setTitle("설문진행");
-                    startButton.setVisibility(View.GONE);
-                    previousButton.setVisibility(View.GONE);
-                    nextButton.setVisibility(View.VISIBLE);
-                    introTitleTextView.setVisibility(View.GONE);
-                    introContentTextView.setVisibility(View.GONE);
+                    if(questionJSONArray.length() == 1){
+                        startButton.setVisibility(View.GONE);
+                        previousButton.setVisibility(View.VISIBLE);
+                        nextButton.setVisibility(View.GONE);
+                        finishButton.setVisibility(View.VISIBLE);
+                        introTitleTextView.setVisibility(View.GONE);
+                        introContentTextView.setVisibility(View.GONE);
+                    }else {
+                        startButton.setVisibility(View.GONE);
+                        previousButton.setVisibility(View.GONE);
+                        nextButton.setVisibility(View.VISIBLE);
+                        introTitleTextView.setVisibility(View.GONE);
+                        introContentTextView.setVisibility(View.GONE);
+                    }
                 } else if(position +1 == questionJSONArray.length()+1){
                     startButton.setVisibility(View.GONE);
                     previousButton.setVisibility(View.VISIBLE);
@@ -145,6 +163,7 @@ public class SurveyActivity extends AppCompatActivity {
                 insertQuestionId();
                 int currentPage = viewPager.getCurrentItem();
                 controlPosition++;
+                System.out.println("nextButton.controlPosition's Value = " + controlPosition);
                 getParseJSON();
                 viewPager.setCurrentItem(currentPage + 1, true);
             }
@@ -155,6 +174,7 @@ public class SurveyActivity extends AppCompatActivity {
             public void onClick(View v) {
                 int currentPage = viewPager.getCurrentItem();
                 controlPosition++;
+                System.out.println("controlPosition's Value = " + controlPosition);
                 getParseJSON();
                 viewPager.setCurrentItem(currentPage + 1, false);
             }
@@ -170,7 +190,24 @@ public class SurveyActivity extends AppCompatActivity {
         });
 
     }
+    //*****************************************************************************************
 
+    //****************************************************************************
+    //설문 리스트에서 받아온 데이터를 복구하고 변수를 넣는 메소드
+    private void getSurveyData(){
+        Intent intent = getIntent();
+        surveyListArray = intent.getParcelableArrayListExtra("data");
+        listPosition = intent.getIntExtra("position", 1);
+        surveyID = surveyListArray.get(listPosition).getId();
+        surveyTitle = surveyListArray.get(listPosition).getTitle();
+        surveyDescription = surveyListArray.get(listPosition).getDescription();
+        surveyCoin = surveyListArray.get(listPosition).getCoin();
+        surveyIsSale = surveyListArray.get(listPosition).getIsSale();
+        surveyBackgrounColor = surveyListArray.get(listPosition).getBackgroundColor();
+        System.out.println("surveyID's Value = " + surveyID);
+        System.out.println("surveyTitle's Valkue = " + surveyTitle);
+    }
+    //************************************************************************
     public void parseUserJSON(){
         try {
             JSONObject userJSONObject = new JSONObject(getUserJSON);
@@ -222,7 +259,6 @@ public class SurveyActivity extends AppCompatActivity {
             answerArrayList.add(controlPosition, answer);
         }else if(questionTypeId == 4){
             String answer = String.format("%.0f", sf.getRatingScoreAnswer());
-            System.out.println(answer + "qwert");
             answerArrayList.add(controlPosition, answer);
         }else if(questionTypeId == 5){
             String answer = sf.getOpinionTextAnswer();
@@ -235,7 +271,7 @@ public class SurveyActivity extends AppCompatActivity {
     public String postParseJSON(){
         try {
             resultSurveyJSON.put("user_id", userID);
-            resultSurveyJSON.put("form_id", 21);
+            resultSurveyJSON.put("form_id", surveyID);
             JSONArray questionArray = new JSONArray();
             for(int i = 0; i<answerArrayList.size(); i++){
                 JSONObject pushItemObject = new JSONObject();
@@ -266,11 +302,14 @@ public class SurveyActivity extends AppCompatActivity {
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                DBHelper helper = new DBHelper(getApplicationContext(), "survey_list", null, 1);
+                SQLiteDatabase db = helper.getWritableDatabase();
+                String sql = "DELETE FROM survey_list WHERE id = " + surveyID;
+                db.execSQL(sql);
+                db.close();
+                helper.close();
                 controlPosition = -1;
-                System.out.println("abc"+ answerArrayList.get(0));
-                System.out.println("abc"+ answerArrayList.get(1));
-                System.out.println("abc"+ answerArrayList.get(2));
-                postAnswerJSON("http://172.26.2.61:8000/api/response/create", "POST");
+                postAnswerJSON("http://172.26.2.186:8000/api/response/create", "POST");
                 finish();
             }
         });
@@ -300,7 +339,6 @@ public class SurveyActivity extends AppCompatActivity {
                     if (params == null || params.length < 1)
                         return null;
 
-
                     BufferedReader bufferedReader = null;
                     try {
                         URL url = new URL(uri);
@@ -316,7 +354,8 @@ public class SurveyActivity extends AppCompatActivity {
                         con.setDefaultUseCaches(false);
                         OutputStream os = con.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                        writer.write("id="+21);
+                        System.out.println("async's surveyID : " + surveyID);
+                        writer.write("id="+surveyID);
                         writer.flush();
                         writer.close();
                         os.close();
@@ -341,6 +380,8 @@ public class SurveyActivity extends AppCompatActivity {
                         getParseJSON();
                         //viewPager 어뎁터 설정
                         viewPager.setAdapter(new SurveyViewPagerAdapter(getSupportFragmentManager(), questionJSONArray.length()+1));
+                    }else {
+                        Toast.makeText(getApplicationContext(), "설문 아이템 값이 null", LENGTH_SHORT).show();
                     }
                 }
             }
@@ -446,10 +487,12 @@ public class SurveyActivity extends AppCompatActivity {
             protected void onPostExecute(String result) {
                 getUserJSON = result;
                 System.out.println("popo" + getUserJSON);
-                if(getSurveyJSON != result) {
-                    parseUserJSON();
-                    getSurveyItemJSON("http://172.26.2.61:8000/api/response/questions", "POST");
+                if(getUserJSON == null) {
+                    Toast.makeText(getApplicationContext(), "jwt 토큰 인증 실패", Toast.LENGTH_SHORT).show();
+                    return;
                 }
+                parseUserJSON();
+                getSurveyItemJSON("http://172.26.2.186:8000/api/response/questions", "POST");
             }
         }
         GetDataJson g = new GetDataJson();

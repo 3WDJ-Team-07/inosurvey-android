@@ -11,20 +11,22 @@ import xyz.inosurvey.inosurvey.ItemData.*;
 import xyz.inosurvey.inosurvey.MainActivity;
 import xyz.inosurvey.inosurvey.R;
 import xyz.inosurvey.inosurvey.SurveyActivity;
+import xyz.inosurvey.inosurvey.bean.SurveyList;
 
 //recyclerView 상속, 이 안에는 ViewHolder를 상속 받아야만 함.
 public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.ViewHolder>{
-
+    private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
     private ArrayList<SurveyListData> surveyListDataSet;
     public MainActivity activity;
 
     //어댑터 생성자, 매개변수 : ArrayList<SurveyListData>
-    public SurveyListAdapter(ArrayList<SurveyListData> newSurveyListDataSet){
+    public SurveyListAdapter(ArrayList<SurveyListData> newSurveyListDataSet, ArrayList<SurveyList> surveyListArray){
         surveyListDataSet = newSurveyListDataSet;
+        this.surveyListArray = surveyListArray;
     }
 
     //viewHolder 클래스 정의
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         public TextView surveyTitleTextView, coinTextView, timeTextView, surveyCoinTextView, surveyTimeTextView;
 
@@ -45,7 +47,11 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
         //adaper 형식의 activity 혹은 fragment가 없는 class는 view 객체에서 context를 받아와야한다.
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition();
             Intent intent = new Intent(v.getContext(), SurveyActivity.class);
+            intent.putParcelableArrayListExtra("data", surveyListArray);
+            intent.putExtra("position", position);
+
             //View 객체 v에서 context를 받아와 activity start
             v.getContext().startActivity(intent);
         }
