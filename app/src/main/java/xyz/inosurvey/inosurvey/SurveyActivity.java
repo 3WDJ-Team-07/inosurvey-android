@@ -22,10 +22,8 @@ import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.InputStreamReader;
@@ -39,6 +37,7 @@ import xyz.inosurvey.inosurvey.adapter.SurveyViewPagerAdapter;
 import xyz.inosurvey.inosurvey.bean.SurveyList;
 import xyz.inosurvey.inosurvey.fragment.SurveyFragment;
 
+import static android.widget.Toast.LENGTH_LONG;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class SurveyActivity extends AppCompatActivity {
@@ -83,6 +82,7 @@ public class SurveyActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
         finishButton = findViewById(R.id.finishButton);
         startButton = findViewById(R.id.startButton);
+        ProgressDialog progressDialog = new ProgressDialog(SurveyActivity.this);
 
         getSurveyData();
 
@@ -94,7 +94,7 @@ public class SurveyActivity extends AppCompatActivity {
         ab.setTitle("설문소개");
         ab.setDisplayHomeAsUpEnabled(true);
 
-        getUserJson("http://172.26.2.186:8000/api/user/check", "POST");
+        getUserJson("http://172.26.4.86:8000/api/user/check", "POST");
 
         System.out.println(getUserJSON + "bbb");
 
@@ -116,7 +116,7 @@ public class SurveyActivity extends AppCompatActivity {
                     ab.setTitle("설문진행");
                     if(questionJSONArray.length() == 1){
                         startButton.setVisibility(View.GONE);
-                        previousButton.setVisibility(View.VISIBLE);
+                        previousButton.setVisibility(View.GONE);
                         nextButton.setVisibility(View.GONE);
                         finishButton.setVisibility(View.VISIBLE);
                         introTitleTextView.setVisibility(View.GONE);
@@ -205,7 +205,7 @@ public class SurveyActivity extends AppCompatActivity {
         surveyIsSale = surveyListArray.get(listPosition).getIsSale();
         surveyBackgrounColor = surveyListArray.get(listPosition).getBackgroundColor();
         System.out.println("surveyID's Value = " + surveyID);
-        System.out.println("surveyTitle's Valkue = " + surveyTitle);
+        System.out.println("surveyTitle's Value = " + surveyTitle);
     }
     //************************************************************************
     public void parseUserJSON(){
@@ -227,6 +227,9 @@ public class SurveyActivity extends AppCompatActivity {
         try {
             surveyJSONObject = new JSONObject(getSurveyJSON);
             questionJSONArray = surveyJSONObject.getJSONArray("questionItem");
+            if(questionJSONArray.length() == 0) {
+                System.out.println("getParseJSON's err situation : " + "surveyJSONObject = " + surveyJSONObject + "  questionJSONArray's length = " + questionJSONArray.length());
+            }
             questionJSONObject = questionJSONArray.getJSONObject(controlPosition);
             questionId = questionJSONObject.getInt("id");
             System.out.println("getParseJSON" + questionId);
@@ -262,6 +265,9 @@ public class SurveyActivity extends AppCompatActivity {
             answerArrayList.add(controlPosition, answer);
         }else if(questionTypeId == 5){
             String answer = sf.getOpinionTextAnswer();
+            answerArrayList.add(controlPosition, answer);
+        }else if(questionTypeId == 6){
+            String answer = sf.getRadioAnswer();
             answerArrayList.add(controlPosition, answer);
         }
     }
@@ -309,7 +315,7 @@ public class SurveyActivity extends AppCompatActivity {
                 db.close();
                 helper.close();
                 controlPosition = -1;
-                postAnswerJSON("http://172.26.2.186:8000/api/response/create", "POST");
+                postAnswerJSON("http://172.26.4.86:8000/api/response/create", "POST");
                 finish();
             }
         });
@@ -317,18 +323,18 @@ public class SurveyActivity extends AppCompatActivity {
         builder.show();
     }
 
-
-
         public void getSurveyItemJSON(String url, String method){
 
             class GetDataJson extends AsyncTask<String, Void, String> {
                 ProgressDialog progressDialog = new ProgressDialog(SurveyActivity.this);
                 @Override
                 protected void onPreExecute(){
-                    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                    progressDialog.setMessage("잠시만 기다려주세요.");
-                    progressDialog.show();
-                    super.onPreExecute();
+                    if(SurveyActivity.this.isFinishing() == false) {
+                        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+                        progressDialog.setMessage("잠시만 기다려주세요.");
+                        progressDialog.show();
+                        super.onPreExecute();
+                    }
                 }
 
                 @Override
@@ -359,13 +365,18 @@ public class SurveyActivity extends AppCompatActivity {
                         writer.flush();
                         writer.close();
                         os.close();
+                        writer.close();
                         con.connect();
                         StringBuilder sb = new StringBuilder();
                         bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                         String json;
+                        if(isCancelled()){
+                            return null;
+                        }
                         while ((json = bufferedReader.readLine()) != null) {
                             sb.append(json + "\n");
                         }
+                        bufferedReader.close();
                         return sb.toString().trim();
                     } catch (Exception e) {
                         return null;
@@ -379,10 +390,31 @@ public class SurveyActivity extends AppCompatActivity {
                     if(getSurveyJSON != null) {
                         getParseJSON();
                         //viewPager 어뎁터 설정
-                        viewPager.setAdapter(new SurveyViewPagerAdapter(getSupportFragmentManager(), questionJSONArray.length()+1));
+                        if(questionJSONArray == null){
+                            if(SurveyActivity.this.isFinishing() == false) {
+                                Toast.makeText(getApplicationContext(), "questionJSONArray is null, viewPager null error!", LENGTH_LONG).show();
+                            }
+                            return;
+                        }
+                        if(questionJSONArray.length() == 0){
+                            if(SurveyActivity.this.isFinishing() == false) {
+                                Toast.makeText(getApplicationContext(), "viewPager count가 0이라 에러!", LENGTH_LONG).show();
+                            }
+                            System.out.println("설문 아이템 받아 온 후 JSONArray의 길이 만큼 viewPager에 count를 넘겨줌 길이 : " + questionJSONArray.length());
+                            finish();
+                            return;
+                        }else
+                            viewPager.setAdapter(new SurveyViewPagerAdapter(getSupportFragmentManager(), questionJSONArray.length()+1));
                     }else {
-                        Toast.makeText(getApplicationContext(), "설문 아이템 값이 null", LENGTH_SHORT).show();
+                        if(SurveyActivity.this.isFinishing() == false) {
+                            Toast.makeText(getApplicationContext(), "설문 아이템 값이 null", LENGTH_SHORT).show();
+                        }
                     }
+                }
+                @Override
+                protected void onCancelled(){
+                    super.onCancelled();
+                    System.out.println("요청 취소!");
                 }
             }
             GetDataJson g = new GetDataJson();
@@ -448,6 +480,7 @@ public class SurveyActivity extends AppCompatActivity {
     public void getUserJson(String url, String method) {
 
         class GetDataJson extends AsyncTask<String, Void, String> {
+
             @Override
             protected String doInBackground(String... params) {
                 String uri = params[0];
@@ -492,7 +525,7 @@ public class SurveyActivity extends AppCompatActivity {
                     return;
                 }
                 parseUserJSON();
-                getSurveyItemJSON("http://172.26.2.186:8000/api/response/questions", "POST");
+                getSurveyItemJSON("http://172.26.4.86:8000/api/response/questions", "POST");
             }
         }
         GetDataJson g = new GetDataJson();
@@ -508,6 +541,12 @@ public class SurveyActivity extends AppCompatActivity {
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        controlPosition=-1;
     }
 
 }

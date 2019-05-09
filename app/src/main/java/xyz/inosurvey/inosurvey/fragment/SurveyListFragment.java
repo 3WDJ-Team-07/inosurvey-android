@@ -12,20 +12,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import java.util.ArrayList;
-
 import xyz.inosurvey.inosurvey.DBHelper;
 import xyz.inosurvey.inosurvey.ItemData.SurveyListData;
-import xyz.inosurvey.inosurvey.MainActivity;
 import xyz.inosurvey.inosurvey.adapter.SurveyListAdapter;
 import xyz.inosurvey.inosurvey.R;
 import xyz.inosurvey.inosurvey.bean.SurveyList;
 
 public class SurveyListFragment extends Fragment {
 
-    public MainActivity activity;
     private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
     private Context context;
-    private DBHelper dbHelper;
     private RecyclerView surveyListView;
     private RecyclerView.LayoutManager surveyListLayoutManager;
     private RecyclerView.Adapter surveyListAdapter;
@@ -35,9 +31,6 @@ public class SurveyListFragment extends Fragment {
     private String getTitle, getCoin, getDescription, getStartedAt, getClosedAt, getBackgroundColor ;
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
 
-        //ActionBar ab = get
-        //GetData g = new GetData();
-        //g.getJson("http://172.26.2.232:8000/test");
         View v = inflater.inflate(R.layout.fragment_survey_list,container,false);
         context = getActivity();
         selectSurveyList(context);
@@ -87,12 +80,19 @@ public class SurveyListFragment extends Fragment {
     }
 
     public void addList(){
-        String title, coin, closedAt;
+        String title, coin, closedAt, percentText;
+        int progressBarPercent, count, number;
         for(int i =0; i<surveyListArray.size(); i++){
             title = surveyListArray.get(i).getTitle();
             coin = surveyListArray.get(i).getCoin();
             closedAt = surveyListArray.get(i).getClosedAt();
-            surveyListDataSet.add(new SurveyListData(title,"적립 코인", "남은 기간", coin, closedAt));
+            count = surveyListArray.get(i).getRespondentCount();
+            number = surveyListArray.get(i).getRespondentNumber();
+            percentText =  count/number + "%";
+            progressBarPercent = Math.round(count/number);
+            //System.out.println(percent + " " +  " " + "counting");
+
+            surveyListDataSet.add(new SurveyListData(title,"적립 코인", "마감 시간", coin, closedAt, percentText, progressBarPercent, R.drawable.coins, R.drawable.hourglass));
         }
     }
 }

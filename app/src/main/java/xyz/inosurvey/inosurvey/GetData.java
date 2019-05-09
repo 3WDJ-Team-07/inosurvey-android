@@ -48,16 +48,6 @@ public class GetData {
                     con.setDoInput(true);
                     con.setUseCaches(false);
                     con.setDefaultUseCaches(false);
-
-                    //jwtCookie = con.getHeaderField(COOKIES_HEADER);
-                    /*List<String> jwtCookies = con.getHeaderFields().get(COOKIES_HEADER);
-                    if(jwtCookies != null){
-                        for(String cookies : jwtCookies){
-                            System.out.println(cookies.split(";\\s")[0] + "abcd");
-                        }
-                    }*/
-                    //System.out.println(jwtCookies + "abab");
-
                     StringBuilder sb = new StringBuilder();
                     bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
                     String json;

@@ -5,6 +5,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.ItemData.*;
@@ -15,9 +17,8 @@ import xyz.inosurvey.inosurvey.bean.SurveyList;
 
 //recyclerView 상속, 이 안에는 ViewHolder를 상속 받아야만 함.
 public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.ViewHolder>{
-    private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
+    private ArrayList<SurveyList> surveyListArray;
     private ArrayList<SurveyListData> surveyListDataSet;
-    public MainActivity activity;
 
     //어댑터 생성자, 매개변수 : ArrayList<SurveyListData>
     public SurveyListAdapter(ArrayList<SurveyListData> newSurveyListDataSet, ArrayList<SurveyList> surveyListArray){
@@ -28,7 +29,9 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
     //viewHolder 클래스 정의
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
-        public TextView surveyTitleTextView, coinTextView, timeTextView, surveyCoinTextView, surveyTimeTextView;
+        public TextView surveyTitleTextView, coinTextView, timeTextView, surveyCoinTextView, surveyTimeTextView, progressBarTextView;
+        public ProgressBar progressBar;
+        public ImageView coinImageView, timeImageView;
 
         //아이템에 들어갈 View를 받은 후 그 View 안에 있는 widget들을 초기화한다.
         public ViewHolder(View view){
@@ -38,6 +41,10 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
             timeTextView = view.findViewById(R.id.timeTextView);
             surveyCoinTextView = view.findViewById(R.id.surveyCoinTextView);
             surveyTimeTextView = view.findViewById(R.id.surveyTimeTextView);
+            progressBarTextView = view.findViewById(R.id.progressBarTextView);
+            progressBar = view.findViewById(R.id.progressBar);
+            coinImageView = view.findViewById(R.id.coinImageView);
+            timeImageView = view.findViewById(R.id.timeImageView);
 
             //이벤트 리스너 등록
             view.setOnClickListener(this);
@@ -67,7 +74,7 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
         return vh;
     }
 
-    //RecyclerView의 item의 셋팅과 사용자가 스크롤링 할 때, 호출되는 메소드로 DataSet의 positon을 보여주는 것을 보장해준다.
+    //RecyclerView의 item의 셋팅과 사용자가 스크롤링 할 때, 호출되는 메소드로 DataSet의 positon을 보여줌(바인딩)
     @Override
     public void onBindViewHolder(SurveyListAdapter.ViewHolder holder, int position){
         holder.surveyTitleTextView.setText(surveyListDataSet.get(position).surveyTitleText);
@@ -75,6 +82,10 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
         holder.timeTextView.setText(surveyListDataSet.get(position).timeText);
         holder.surveyCoinTextView.setText(surveyListDataSet.get(position).surveyCoinText);
         holder.surveyTimeTextView.setText(surveyListDataSet.get(position).surveyTimeText);
+        holder.progressBarTextView.setText(surveyListDataSet.get(position).progressBarText);
+        holder.progressBar.setProgress(surveyListDataSet.get(position).progressBar);
+        holder.coinImageView.setImageResource(surveyListDataSet.get(position).coinImageView);
+        holder.timeImageView.setImageResource(surveyListDataSet.get(position).timeImageView);
     }
 
     //아이템의 갯수 카운트

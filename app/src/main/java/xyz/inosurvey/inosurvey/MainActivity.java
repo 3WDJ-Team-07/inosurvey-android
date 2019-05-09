@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.job.JobInfo;
 import android.app.job.JobScheduler;
 import android.content.ComponentName;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteException;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
@@ -14,12 +12,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.TextView;
+
 import xyz.inosurvey.inosurvey.fragment.ProfileFragment;
 import xyz.inosurvey.inosurvey.fragment.SettingFragment;
 import xyz.inosurvey.inosurvey.fragment.SurveyListFragment;
-import xyz.inosurvey.inosurvey.fragment.DonationFragment;
+import xyz.inosurvey.inosurvey.fragment.DonationListFragment;
 
 public class MainActivity extends AppCompatActivity{
 
@@ -72,7 +69,7 @@ public class MainActivity extends AppCompatActivity{
                         break;
                     //마켓
                     case R.id.bottom_survey_donation:
-                        fragment = new DonationFragment();
+                        fragment = new DonationListFragment();
                         ab.setTitle("기부 리스트");
                         break;
                     //프로필

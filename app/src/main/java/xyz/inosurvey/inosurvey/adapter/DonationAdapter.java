@@ -11,12 +11,14 @@ import xyz.inosurvey.inosurvey.DonationActivity;
 import xyz.inosurvey.inosurvey.ItemData.*;
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.R;
+import xyz.inosurvey.inosurvey.bean.DonationList;
 
 public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHolder>{
 
     private ArrayList<DonationData> donationDataSet;
+    private ArrayList<DonationList> donationListArray;
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView imageView;
         public TextView titleTextView, donationTextView, companyTextView;
 
@@ -32,26 +34,30 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
 
         @Override
         public void onClick(View v) {
+            int position = getAdapterPosition();
             Intent intent = new Intent(v.getContext(), DonationActivity.class);
+            intent.putParcelableArrayListExtra("data", donationListArray);
+            intent.putExtra("position", position);
+
             v.getContext().startActivity(intent);
         }
     }
 
-    public DonationAdapter(ArrayList<DonationData> newDonationDataSet){
+    public DonationAdapter(ArrayList<DonationData> newDonationDataSet, ArrayList<DonationList> donationLists){
         donationDataSet = newDonationDataSet;
+        this.donationListArray = donationLists;
     }
 
     @Override
     public DonationAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType){
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.card_donation, parent, false);
-
         ViewHolder vh = new ViewHolder(v);
         return vh;
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position){
-        holder.imageView.setImageResource(donationDataSet.get(position).imageView);
+        holder.imageView.setImageDrawable(donationDataSet.get(position).imageView);
         holder.titleTextView.setText(donationDataSet.get(position).titleTextView);
         holder.companyTextView.setText(donationDataSet.get(position).companyTextView);
         holder.donationTextView.setText(donationDataSet.get(position).donationTextView);

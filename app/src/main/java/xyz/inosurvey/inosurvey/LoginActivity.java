@@ -32,24 +32,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private String TAG = "LoginActivity";
     private Button loginButton;
-    public static SharedPreferences token;
+    public static SharedPreferences preferences;
     private String idText = null;
     private String pwText = null;
     public String myJSON;
     private boolean loginResult;
     private String jwtResult = null;
     public static String jwtToken = null;
+    public static int userINO;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
         //System.out.println(jwtToken+  "jwtToken");
-        token = getSharedPreferences("jwt", MODE_PRIVATE);
-        jwtToken = token.getString("jwt", null);
+        preferences= getSharedPreferences("jwt", MODE_PRIVATE);
+        jwtToken = preferences.getString("jwt", null);
         Log.d(TAG, "jwtToken value = " + jwtToken);
         if(jwtToken !=null){
             ActivityCompat.finishAffinity(this);
+            jwtToken = preferences.getString("jwt", null);
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
         loginButton= findViewById(R.id.loginButton);
@@ -65,7 +67,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         idText = idEditText.getText().toString();
         pwText = pwEditText.getText().toString();
         GetData g = new GetData();
-        g.getJson("http://172.26.2.186:8000/api/user/login");
+        g.getJson("http://172.26.4.86:8000/api/user/login");
         //액티비티 destroy
         //ActivityCompat.finishAffinity(this);
     }
@@ -84,7 +86,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     }
 
     public class GetData {
-
         public void getJson(String url){
 
             class GetDataJson extends AsyncTask<String, Void, String> {
@@ -156,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         }
 
         public void setHeader(String header){
-            SharedPreferences.Editor editor = token.edit();
+            SharedPreferences.Editor editor = preferences.edit();
             editor.putString("jwt", header);
             editor.commit();
         }

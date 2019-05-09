@@ -1,13 +1,21 @@
 package xyz.inosurvey.inosurvey;
 
+import android.app.job.JobInfo;
+import android.app.job.JobScheduler;
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 public class SplashActivity extends AppCompatActivity{
+
+    private final String TAG = "JOB SERVICE";
+    private int userID;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -18,7 +26,7 @@ public class SplashActivity extends AppCompatActivity{
         actionBar.hide();
 
         Handler hd = new Handler();
-        hd.postDelayed(new splashhandler(), 2000);
+        hd.postDelayed(new splashhandler(), 3500);
 
     }
 

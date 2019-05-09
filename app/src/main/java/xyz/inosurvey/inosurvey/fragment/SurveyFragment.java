@@ -1,13 +1,16 @@
 package xyz.inosurvey.inosurvey.fragment;
 
-import android.app.Activity;
-import android.app.ProgressDialog;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -15,21 +18,21 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import xyz.inosurvey.inosurvey.SurveyActivity;
@@ -41,6 +44,7 @@ public class SurveyFragment extends Fragment {
 
     public CheckBox checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6;
     public RadioButton radioButton1, radioButton2, radioButton3, radioButton4, radioButton5, radioButton6;
+    public RadioButton imageRadioButton1, imageRadioButton2, imageRadioButton3, imageRadioButton4, imageRadioButton5, imageRadioButton6;
     public RadioGroup radioGroup;
     public TextView titleTextView;
     public RatingBar ratingBar;
@@ -48,12 +52,15 @@ public class SurveyFragment extends Fragment {
     public float getRatingBarScore;
     public ArrayList<CheckBox> checkBoxArrayList = new ArrayList<>();
     public ArrayList<RadioButton> radioButtonArrayList = new ArrayList<>();
+    public ArrayList<RadioButton> imageRadioButtonArrayList = new ArrayList<>();
     public String radioAnswer;
-    private String questionTitle = null;
-    private String questionItemContent = null;
+    private String questionTitle;
+    private String questionItemContent;
+    private String questionItemImage;
     private ArrayList<String> answerArray = new ArrayList<>();
     private ArrayList<String> checkBoxAnswerArray = new ArrayList<>();
-
+    Drawable drawable;
+    int radioButtonPosition = 0;
 
     public SurveyFragment() {
     }
@@ -80,6 +87,12 @@ public class SurveyFragment extends Fragment {
         radioButton3 = (RadioButton) v.findViewById(R.id.radioButton3);
         radioButton2 = (RadioButton) v.findViewById(R.id.radioButton2);
         radioButton1 = (RadioButton) v.findViewById(R.id.radioButton1);
+        imageRadioButton1 = v.findViewById(R.id.imageRadioButton1);
+        imageRadioButton2 = v.findViewById(R.id.imageRadioButton2);
+        imageRadioButton3 = v.findViewById(R.id.imageRadioButton3);
+        imageRadioButton4 = v.findViewById(R.id.imageRadioButton4);
+        imageRadioButton5 = v.findViewById(R.id.imageRadioButton5);
+        imageRadioButton6 = v.findViewById(R.id.imageRadioButton6);
         titleTextView = (TextView) v.findViewById(R.id.titleTextVIew);
         ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
 ;
@@ -139,6 +152,13 @@ public class SurveyFragment extends Fragment {
         radioButtonArrayList.add(radioButton5);
         radioButtonArrayList.add(radioButton6);
 
+        imageRadioButtonArrayList.add(imageRadioButton1);
+        imageRadioButtonArrayList.add(imageRadioButton2);
+        imageRadioButtonArrayList.add(imageRadioButton3);
+        imageRadioButtonArrayList.add(imageRadioButton4);
+        imageRadioButtonArrayList.add(imageRadioButton5);
+        imageRadioButtonArrayList.add(imageRadioButton6);
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -153,6 +173,19 @@ public class SurveyFragment extends Fragment {
                 }else if(checkedId == R.id.radioButton5){
                     radioAnswer = "5";
                 }else if(checkedId == R.id.radioButton6){
+                    radioAnswer = "6";
+                }
+                if(checkedId == R.id.imageRadioButton1){
+                    radioAnswer = "1";
+                }else if(checkedId == R.id.imageRadioButton2){
+                    radioAnswer = "2";
+                }else if(checkedId == R.id.imageRadioButton3){
+                    radioAnswer = "3";
+                }else if(checkedId == R.id.imageRadioButton4){
+                    radioAnswer = "4";
+                }else if(checkedId == R.id.imageRadioButton5){
+                    radioAnswer = "5";
+                }else if(checkedId == R.id.imageRadioButton6){
                     radioAnswer = "6";
                 }
             }
@@ -241,7 +274,6 @@ public class SurveyFragment extends Fragment {
                     JSONObject questionItemsJSONObject = null;
                     String questionItemContent = null;
                     if (((SurveyActivity)getActivity()).questionTypeId == 1) {
-                        int radioButtonPosition = 0;
                         for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
                             questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
                             questionItemContent = questionItemsJSONObject.getString("content");
@@ -249,9 +281,9 @@ public class SurveyFragment extends Fragment {
                             radioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
                             radioButtonPosition++;
                         }
+                        radioButtonPosition=0;
                     } else if (((SurveyActivity)getActivity()).questionTypeId == 2) {
                         editText.setVisibility(View.VISIBLE);
-
                     } else if (((SurveyActivity)getActivity()).questionTypeId == 3) {
                         int checkBoxPosition = 0;
                         for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
@@ -259,13 +291,53 @@ public class SurveyFragment extends Fragment {
                             questionItemContent = questionItemsJSONObject.getString("content");
                             checkBoxArrayList.get(checkBoxPosition).setText(questionItemContent);
                             checkBoxArrayList.get(checkBoxPosition).setVisibility(View.VISIBLE);
+                            checkBoxPosition++;
                         }
                     } else if (((SurveyActivity)getActivity()).questionTypeId == 4) {
                         ratingBar.setVisibility(View.VISIBLE);
                     } else if (((SurveyActivity)getActivity()).questionTypeId == 5) {
                         opinionEditText.setVisibility(View.VISIBLE);
+                    }else if(((SurveyActivity)getActivity()).questionTypeId == 6){
+                        for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
+                            questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
+                            questionItemContent = questionItemsJSONObject.getString("content");
+                            questionItemImage = questionItemsJSONObject.getString("content_image");
+                            System.out.println(questionItemImage + " 이미지 url");
+                            imageRadioButtonArrayList.get(radioButtonPosition).setText(questionItemContent);
+                                Thread thread = new Thread(){
+                                    @Override
+                                    public void run(){
+                                        try{
+                                            URL url = new URL(questionItemImage);
+                                            HttpURLConnection con = (HttpURLConnection)url.openConnection();
+                                            con.setDoInput(true);
+                                            con.connect();
+                                            InputStream inputStream = (InputStream)url.getContent();
+                                            BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
+                                            Bitmap originalBitmap = BitmapFactory.decodeStream(bufferedInputStream);
+                                            Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 1000, 800, false);
+                                            drawable = new BitmapDrawable(getResources(), resizedBitmap);
+                                            imageRadioButtonArrayList.get(radioButtonPosition).setButtonDrawable(drawable);
+                                            //radioButtonArrayList.get(radioButtonPosition).setCompoundDrawables(0, bmp, 0, 0);
+                                            inputStream.close();
+                                            bufferedInputStream.close();
+                                        }catch(MalformedURLException e){
+                                            e.printStackTrace();
+                                        }catch(IOException e){
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                };
+                                thread.start();
+                                try{
+                                    thread.join();
+                                }catch(InterruptedException e){
+                                    e.printStackTrace();
+                                }
+                            imageRadioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
+                            radioButtonPosition++;
+                        }
                     }
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                     System.out.println("errjson");

@@ -27,7 +27,7 @@ public class SettingFragment extends Fragment {
         logoutButton.setOnClickListener(new Button.OnClickListener() {
             @Override
             public void onClick(View v) {
-                LoginActivity.token.edit().clear().commit();
+                LoginActivity.preferences.edit().clear().commit();
                 LoginActivity.jwtToken = null;
                 Intent intent = new Intent(v.getContext(), LoginActivity.class);
                 startActivity(intent);

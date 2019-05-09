@@ -7,6 +7,7 @@ import android.app.job.JobParameters;
 import android.app.job.JobService;
 import android.content.ContentValues;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.LinearGradient;
@@ -14,8 +15,10 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -37,12 +40,17 @@ public class SurveyJobService extends JobService {
     private String getUserJSON = null;
     private int userID;
     private DBHelper helper;
+    private int userINO;
+    SharedPreferences preferences;
 
     @Override
     public boolean onStartJob(JobParameters params) {
         jobParams = params;
+        preferences = getSharedPreferences("jwt", MODE_PRIVATE);
+        userID = preferences.getInt("user_id", -1);
+        userINO = preferences.getInt("user_ino", -1);
         Log.d(TAG, "job started");
-        postToken("http://172.26.2.186:8000/api/user/check", "POST");
+        postToken("http://172.26.4.86:8000/api/user/check", "POST");
         //doBackgroundWork(params);
         return true;
     }
@@ -96,7 +104,8 @@ public class SurveyJobService extends JobService {
                 System.out.println(getUserJSON + "opi");
                 if(getUserJSON != null) {
                     parseUserJSON();
-                    getSurveyFormJson("http://172.26.2.186:8000/api/response/index", "POST", jobParams);
+                    getUserINO("http://172.26.2.186:8000/api/user/wallet", "POST");
+                    getSurveyFormJson("http://172.26.4.86:8000/api/response/index", "POST", jobParams);
                 }
             }
         }
@@ -121,6 +130,7 @@ public class SurveyJobService extends JobService {
                     con.setRequestMethod(method);
                     con.setRequestProperty("Accept", "application/json");
                     con.setDoInput(true);
+                    con.setDoOutput(true);
                     con.setUseCaches(false);
                     con.setDefaultUseCaches(false);
                     OutputStream os = con.getOutputStream();
@@ -160,12 +170,80 @@ public class SurveyJobService extends JobService {
         g.execute(url, method);
     }
 
+    public void getUserINO(String url, String method){
+
+        class GetINO extends AsyncTask<String, Void, String> {
+            @Override
+            protected String doInBackground(String... params) {
+                String uri = params[0];
+                String method = params[1];
+
+                if (params == null || params.length < 1)
+                    return null;
+                BufferedReader bufferedReader = null;
+                try {
+                    URL url = new URL(uri);
+                    HttpURLConnection con = (HttpURLConnection) url.openConnection();
+                    con.setRequestMethod(method);
+                    con.setRequestProperty("Accept","application/json");
+                    con.setDoInput(true);
+                    con.setDoOutput(true);
+                    con.setUseCaches(false);
+                    con.setDefaultUseCaches(false);
+                    OutputStream os = con.getOutputStream();
+                    BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                    writer.write("id=" + userID);
+                    writer.flush();
+                    writer.close();
+                    os.close();
+                    con.connect();
+                    StringBuilder sb = new StringBuilder();
+                    bufferedReader = new BufferedReader(new InputStreamReader(con.getInputStream()));
+                    String json;
+                    while ((json = bufferedReader.readLine()) != null) {
+                        sb.append(json + "\n");
+                    }
+                    return sb.toString().trim();
+                } catch (Exception e) {
+                    return null;
+                }
+            }
+            @Override
+            protected void onPostExecute(String result){
+                if(result == null){
+                    System.out.println("이노 잔액 결과 null");
+                    return;
+                }
+                if(preferences.getInt("ino", -1) == -1){
+                    String getINOJSON = result;
+                    try {
+                        JSONObject inoObject = new JSONObject(getINOJSON);
+                        String ino = inoObject.getString("current_ino");
+                        int userINO = Integer.parseInt(ino);
+                        SharedPreferences.Editor editor = preferences.edit();
+                        editor.putInt("user_ino", userINO);
+                        editor.commit();
+                        System.out.println("userINO = " + preferences.getInt("user_ino", -1));
+                    }catch(JSONException e){
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        GetINO g = new GetINO();
+        g.execute(url,method);
+    }
+
     public void parseUserJSON(){
         try {
             JSONObject userJSONObject = new JSONObject(getUserJSON);
             System.out.println("abcd");
             JSONObject userObject = userJSONObject.getJSONObject("user");
             userID = userObject.getInt("id");
+            SharedPreferences preferences = getSharedPreferences("jwt", MODE_PRIVATE);
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putInt("user_id", -1);
+            editor.commit();
             System.out.println(userID + "useruser");
         }catch(Exception e){
             System.out.println("zmzm");
@@ -298,7 +376,7 @@ public class SurveyJobService extends JobService {
             notificationChannel = new NotificationChannel("1", "push", NotificationManager.IMPORTANCE_DEFAULT);
             notificationManager.createNotificationChannel(notificationChannel);
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this, notificationChannel.getId());
-            Intent intent = new Intent(this, MainActivity.class);
+            Intent intent = new Intent(this, SplashActivity.class);
             PendingIntent pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_UPDATE_CURRENT);
             notificationBuilder.setAutoCancel(true)
                     .setSmallIcon(R.mipmap.ic_launcher)
