@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import xyz.inosurvey.inosurvey.DonationActivity;
 import xyz.inosurvey.inosurvey.ItemData.*;
@@ -20,14 +21,16 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
 
     public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ImageView imageView;
-        public TextView titleTextView, donationTextView, companyTextView;
+        public TextView titleTextView, amountTextView, percentTextView;
+        public ProgressBar progressBar;
 
         public ViewHolder(View view){
             super(view);
             imageView = view.findViewById(R.id.imageView);
             titleTextView = view.findViewById(R.id.titleTextView);
-            companyTextView = view.findViewById(R.id.companyTextView);
-            donationTextView = view.findViewById(R.id.donationTextView);
+            amountTextView = view.findViewById(R.id.amountTextView);
+            progressBar = view.findViewById(R.id.progressBar);
+            percentTextView = view.findViewById(R.id.percentTextView);
 
             view.setOnClickListener(this);
         }
@@ -59,12 +62,17 @@ public class DonationAdapter extends RecyclerView.Adapter<DonationAdapter.ViewHo
     public void onBindViewHolder(ViewHolder holder, int position){
         holder.imageView.setImageDrawable(donationDataSet.get(position).imageView);
         holder.titleTextView.setText(donationDataSet.get(position).titleTextView);
-        holder.companyTextView.setText(donationDataSet.get(position).companyTextView);
-        holder.donationTextView.setText(donationDataSet.get(position).donationTextView);
+        holder.amountTextView.setText(donationDataSet.get(position).amountTextView);
+        holder.progressBar.setProgress(donationDataSet.get(position).progressBar);
+        holder.percentTextView.setText(donationDataSet.get(position).percentTextView);
     }
 
     @Override
     public int getItemCount(){
         return donationDataSet.size();
+    }
+
+    public void refresh(){
+        notifyDataSetChanged();
     }
 }

@@ -82,7 +82,6 @@ public class SurveyActivity extends AppCompatActivity {
         nextButton = findViewById(R.id.nextButton);
         finishButton = findViewById(R.id.finishButton);
         startButton = findViewById(R.id.startButton);
-        ProgressDialog progressDialog = new ProgressDialog(SurveyActivity.this);
 
         getSurveyData();
 
@@ -94,7 +93,7 @@ public class SurveyActivity extends AppCompatActivity {
         ab.setTitle("설문소개");
         ab.setDisplayHomeAsUpEnabled(true);
 
-        getUserJson("http://172.26.4.86:8000/api/user/check", "POST");
+        getUserJson("http://54.180.121.254/api/user/check", "POST");
 
         System.out.println(getUserJSON + "bbb");
 
@@ -304,7 +303,7 @@ public class SurveyActivity extends AppCompatActivity {
     public void finishAlert(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("알림");
-        builder.setMessage("설문이 완료되었습니다.");
+        builder.setMessage("설문을 완료하시겠습니까?");
         builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -315,8 +314,17 @@ public class SurveyActivity extends AppCompatActivity {
                 db.close();
                 helper.close();
                 controlPosition = -1;
-                postAnswerJSON("http://172.26.4.86:8000/api/response/create", "POST");
+                postAnswerJSON("http://54.180.121.254/api/response/create", "POST");
+                Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
+                intent.putExtra("ino", surveyCoin);
+                startActivity(intent);
                 finish();
+            }
+        });
+        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
             }
         });
 
@@ -525,7 +533,7 @@ public class SurveyActivity extends AppCompatActivity {
                     return;
                 }
                 parseUserJSON();
-                getSurveyItemJSON("http://172.26.4.86:8000/api/response/questions", "POST");
+                getSurveyItemJSON("http://54.180.121.254/api/response/questions", "POST");
             }
         }
         GetDataJson g = new GetDataJson();

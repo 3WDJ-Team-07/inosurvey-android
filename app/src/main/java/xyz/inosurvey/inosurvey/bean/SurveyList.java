@@ -5,17 +5,17 @@ import android.os.Parcelable;
 
 public class SurveyList implements Parcelable {
     private int id, respondentCount, respondentNumber, isCompleted, isSale;
-    private String startedAt, closedAt, title, description, coin, backgroundColor;
+    private String createdAt, closedAt, title, description, coin, backgroundColor;
 
     public SurveyList(){}
 
-    public SurveyList(int id, String title, String description, String coin, String startedAt, String closedAt,
+    public SurveyList(int id, String title, String description, String coin, String createdAt, String closedAt,
                       int respondentCount, int respondentNumber, int isCompleted, int isSale, String bgColor){
         this.id = id;
         this.title = title;
         this.description = description;
         this.coin = coin;
-        this.startedAt = startedAt;
+        this.createdAt = createdAt;
         this.closedAt = closedAt;
         this.respondentCount = respondentCount;
         this.respondentNumber = respondentNumber;
@@ -34,7 +34,7 @@ public class SurveyList implements Parcelable {
         dest.writeString(title);
         dest.writeString(description);
         dest.writeString(coin);
-        dest.writeString(startedAt);
+        dest.writeString(createdAt);
         dest.writeString(closedAt);
         dest.writeInt(respondentCount);
         dest.writeInt(respondentNumber);
@@ -48,7 +48,7 @@ public class SurveyList implements Parcelable {
         title = in.readString();
         description = in.readString();
         coin = in.readString();
-        startedAt = in.readString();
+        createdAt = in.readString();
         closedAt = in.readString();
         respondentCount = in.readInt();
         respondentNumber = in.readInt();
@@ -114,12 +114,12 @@ public class SurveyList implements Parcelable {
         this.isSale = isSale;
     }
 
-    public String getStartedAt() {
-        return startedAt;
+    public String getCreatedAt() {
+        return createdAt;
     }
 
-    public void setStartedAt(String startedAt) {
-        this.startedAt = startedAt;
+    public void setCreatedAt(String startedAt) {
+        this.createdAt = startedAt;
     }
 
     public String getClosedAt() {

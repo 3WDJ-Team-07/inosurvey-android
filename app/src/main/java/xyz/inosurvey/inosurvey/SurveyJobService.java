@@ -10,13 +10,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.graphics.LinearGradient;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
-import android.widget.Toast;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,6 +26,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static java.lang.Integer.parseInt;
+
 public class SurveyJobService extends JobService {
 
     private JobParameters jobParams;
@@ -39,8 +38,10 @@ public class SurveyJobService extends JobService {
     private NotificationChannel notificationChannel;
     private String getUserJSON = null;
     private int userID;
+    private String userNickName;
     private DBHelper helper;
-    private int userINO;
+    //private int userINO;
+    public static int userINO;
     SharedPreferences preferences;
 
     @Override
@@ -50,7 +51,7 @@ public class SurveyJobService extends JobService {
         userID = preferences.getInt("user_id", -1);
         userINO = preferences.getInt("user_ino", -1);
         Log.d(TAG, "job started");
-        postToken("http://172.26.4.86:8000/api/user/check", "POST");
+        postToken("http://54.180.121.254/api/user/check", "POST");
         //doBackgroundWork(params);
         return true;
     }
@@ -82,6 +83,12 @@ public class SurveyJobService extends JobService {
                     OutputStream os = con.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
                     System.out.println(LoginActivity.jwtToken + "zxcvbn");
+                    SharedPreferences preferences = getSharedPreferences("jwt", MODE_PRIVATE);
+                    String token = preferences.getString("jwt", null);
+                    if(token == null){
+                        Log.d("TAG", "toekn is null");
+                        return null;
+                    }
                     writer.write("access_token="+LoginActivity.jwtToken);
                     writer.flush();
                     writer.close();
@@ -104,8 +111,8 @@ public class SurveyJobService extends JobService {
                 System.out.println(getUserJSON + "opi");
                 if(getUserJSON != null) {
                     parseUserJSON();
-                    getUserINO("http://172.26.2.186:8000/api/user/wallet", "POST");
-                    getSurveyFormJson("http://172.26.4.86:8000/api/response/index", "POST", jobParams);
+                    getUserINO("http://54.180.121.254/api/user/wallet", "POST");
+                    getSurveyFormJson("http://54.180.121.254/api/response/index", "POST", jobParams);
                 }
             }
         }
@@ -161,7 +168,6 @@ public class SurveyJobService extends JobService {
                     getSurveyListJSON = result;
                     Log.d(TAG, "getSurveyListJSON's value = " + getSurveyListJSON);
                     insertSurveyListJSON(getSurveyListJSON);
-                    createNotification();
                     jobFinished(params, true);
                 }
             }
@@ -216,9 +222,11 @@ public class SurveyJobService extends JobService {
                 }
                 if(preferences.getInt("ino", -1) == -1){
                     String getINOJSON = result;
+                    System.out.println("이노 잔액 확인 JSON = " + getINOJSON);
                     try {
                         JSONObject inoObject = new JSONObject(getINOJSON);
                         String ino = inoObject.getString("current_ino");
+                        System.out.println("이노 잔액 확인 String = " + ino);
                         int userINO = Integer.parseInt(ino);
                         SharedPreferences.Editor editor = preferences.edit();
                         editor.putInt("user_ino", userINO);
@@ -240,9 +248,14 @@ public class SurveyJobService extends JobService {
             System.out.println("abcd");
             JSONObject userObject = userJSONObject.getJSONObject("user");
             userID = userObject.getInt("id");
+            String userNickName = userObject.getString("nickname");
+            String userEmail = userObject.getString("email");
             SharedPreferences preferences = getSharedPreferences("jwt", MODE_PRIVATE);
             SharedPreferences.Editor editor = preferences.edit();
-            editor.putInt("user_id", -1);
+            editor.putInt("user_id", userID);
+            editor.putString("user_nickname", userNickName);
+            editor.putString("user_email", userEmail);
+            System.out.println("parseUserJSON's situation" + userNickName + userEmail);
             editor.commit();
             System.out.println(userID + "useruser");
         }catch(Exception e){
@@ -255,7 +268,7 @@ public class SurveyJobService extends JobService {
         int dbInsertResult;
         try{
             int id;
-            String title, description, bgColor, startedAt, closedAt;
+            String title, description, bgColor, createdAt, closedAt;
             int coin, respondentNumber, respondentCount, isCompleted, isSale;
 
             JSONObject surveyListJSONObject = new JSONObject(surveyListJSON);
@@ -270,16 +283,16 @@ public class SurveyJobService extends JobService {
                 id = surveyFormObject.getInt("id");
                 Log.d(TAG, "insertSurveyListJSON's get List in id = " +id);
                 title = surveyFormObject.getString("title");
-                coin = 500;
+                coin = parseInt(surveyFormObject.getString("reward"));
                 description = surveyFormObject.getString("description");
                 respondentNumber = surveyFormObject.getInt("respondent_number");
                 respondentCount = surveyFormObject.getInt("respondent_count");
                 isCompleted = surveyFormObject.getInt("is_completed");
                 isSale = surveyFormObject.getInt("is_sale");
-                startedAt = surveyFormObject.getString("started_at");
+                createdAt = surveyFormObject.getString("created_at");
                 closedAt = surveyFormObject.getString("closed_at");
                 bgColor = surveyFormObject.getString("bgcolor");
-                dbInsertResult = insertSurveyList(id, title, description, coin, startedAt, closedAt, respondentCount, respondentNumber, isCompleted, isSale, bgColor);
+                dbInsertResult = insertSurveyList(id, title, description, coin, createdAt, closedAt, respondentCount, respondentNumber, isCompleted, isSale, bgColor);
                 Log.d(TAG, "dbInsertResult = " + dbInsertResult);
             }
 
@@ -306,7 +319,7 @@ public class SurveyJobService extends JobService {
         return result;
     }
 
-    public int insertSurveyList(int id, String title, String description, int coin, String startedAt, String closedAt, int respondentCount, int respondentNumber, int isCompleted,int isSale, String bgColor){
+    public int insertSurveyList(int id, String title, String description, int coin, String createdAt, String closedAt, int respondentCount, int respondentNumber, int isCompleted,int isSale, String bgColor){
         try {
             helper = new DBHelper(this, "survey_list", null, 1);
             SQLiteDatabase db = helper.getWritableDatabase();
@@ -320,7 +333,7 @@ public class SurveyJobService extends JobService {
             contentValues.put("title", title);
             contentValues.put("description", description);
             contentValues.put("coin", coin);
-            contentValues.put("started_at", startedAt);
+            contentValues.put("started_at", createdAt);
             contentValues.put("closed_at", closedAt);
             contentValues.put("respondent_count", respondentCount);
             contentValues.put("respondent_number", respondentNumber);
@@ -338,6 +351,7 @@ public class SurveyJobService extends JobService {
             e.printStackTrace();
             return 0;
         }
+        createNotification();
         return 1;
     }
 

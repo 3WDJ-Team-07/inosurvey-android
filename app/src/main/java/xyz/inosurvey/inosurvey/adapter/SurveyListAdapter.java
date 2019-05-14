@@ -20,6 +20,7 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
     private ArrayList<SurveyList> surveyListArray;
     private ArrayList<SurveyListData> surveyListDataSet;
 
+
     //어댑터 생성자, 매개변수 : ArrayList<SurveyListData>
     public SurveyListAdapter(ArrayList<SurveyListData> newSurveyListDataSet, ArrayList<SurveyList> surveyListArray){
         surveyListDataSet = newSurveyListDataSet;
@@ -92,5 +93,9 @@ public class SurveyListAdapter extends RecyclerView.Adapter<SurveyListAdapter.Vi
     @Override
     public int getItemCount(){
         return surveyListDataSet.size();
+    }
+
+    public void clear(){
+        surveyListDataSet.clear();
     }
 }

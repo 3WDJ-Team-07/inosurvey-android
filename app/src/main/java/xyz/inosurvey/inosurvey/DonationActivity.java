@@ -4,6 +4,8 @@ import android.app.job.JobParameters;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -43,16 +45,19 @@ public class DonationActivity  extends AppCompatActivity {
     private Drawable imageDrawable;
     private String imageURL;
     private int giveINO;
+    private int userINO;
+    private SharedPreferences preferences;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_donation);
 
+        preferences = getSharedPreferences("jwt", MODE_PRIVATE);
+        userINO = preferences.getInt("user_ino", -1);
         imageView = findViewById(R.id.imageView);
         introTextView = findViewById(R.id.introTextView);
         donationButton = findViewById(R.id.donationButton);
         editText = findViewById(R.id.editText);
-        System.out.println("flag10");
         ActionBar ab = getSupportActionBar();
         ab.setTitle("기부하기");
         ab.setDisplayHomeAsUpEnabled(true);
@@ -106,17 +111,22 @@ public class DonationActivity  extends AppCompatActivity {
     public void finishAlert(){
         final EditText editText = new EditText(this);
         editText.setInputType(InputType.TYPE_CLASS_NUMBER);
+        int color = Color.parseColor("#2196f3");
+        editText.getBackground().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("알림");
-        builder.setMessage("기부하실 이노를 입력해주세요.");
+        builder.setMessage("기부하실 이노를 입력해주세요.\n" +"보유 이노 : " + userINO);
         builder.setView(editText);
         builder.setPositiveButton("입력", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 giveINO = Integer.parseInt(editText.getText().toString());
-                postINO("http://172.26.2.186:8000/api/donation/donate", "POST");
-                Toast.makeText(getApplicationContext(), giveINO +"원 기부하셨습니다.", Toast.LENGTH_SHORT).show();
+                postINO("http://54.180.121.254/api/donation/donate", "POST");
+                Toast.makeText(getApplicationContext(), giveINO +" 이노 기부하셨습니다.", Toast.LENGTH_SHORT).show();
+                SharedPreferences.Editor editor = preferences.edit();
+                editor.putInt("user_ino", userINO-giveINO);
+                editor.commit();
                 finish();
             }
         });

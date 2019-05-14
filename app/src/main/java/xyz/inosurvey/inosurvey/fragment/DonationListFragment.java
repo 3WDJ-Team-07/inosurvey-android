@@ -9,6 +9,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -59,7 +60,7 @@ public class DonationListFragment extends Fragment {
         View 객체를 이용해 함수 호출을 한다.
         ************************************************************************
         */
-        getDonationList("http://172.26.4.86:8000/api/donation/index", "GET");
+        getDonationList("http://54.180.121.254/api/donation/index", "GET");
         View v = inflater.inflate(R.layout.fragment_donation_list, container, false);
         donationView = v.findViewById(R.id.donationView);
 
@@ -191,13 +192,24 @@ public class DonationListFragment extends Fragment {
                 System.out.println("mzmzmz");
                 e.printStackTrace();
             }
-            String title = donationList.getTitle();
-            String content = donationList.getContent();
-            String company = donationList.getCompany();
+            String title = donationList.getTitle().trim();
+            int targetAmount = donationList.getTargetAmount();
+            int currentAmount = donationList.getCurrentAmount();
             int amount = donationList.getTargetAmount()-donationList.getCurrentAmount();
+            int amountPercent;
+            if(currentAmount != 0) {
+                amountPercent = (currentAmount / targetAmount) * 100;
+                System.out.println(amountPercent + "남은 금액 퍼센트");
+            }else {
+                amountPercent = 0;
+            }
             System.out.println(amount + "amount");
-            donationDataSet.add(new DonationData(imageDrawable, title, company, "남은 금액 : " + amount));
+            donationDataSet.add(new DonationData(imageDrawable, title, "남은 금액 : "+ amount, amountPercent , amountPercent+"%"));
         }
     }
 
+    public void onResume(){
+
+        super.onResume();
+    }
 }

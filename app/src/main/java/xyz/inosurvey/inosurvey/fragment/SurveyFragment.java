@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
@@ -42,6 +43,7 @@ import static xyz.inosurvey.inosurvey.SurveyActivity.controlPosition;
 
 public class SurveyFragment extends Fragment {
 
+    public ImageView checkImageView1, checkImageView2, checkImageView3, checkImageView4, checkImageView5, checkImageView6;
     public CheckBox checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6;
     public RadioButton radioButton1, radioButton2, radioButton3, radioButton4, radioButton5, radioButton6;
     public RadioButton imageRadioButton1, imageRadioButton2, imageRadioButton3, imageRadioButton4, imageRadioButton5, imageRadioButton6;
@@ -53,6 +55,7 @@ public class SurveyFragment extends Fragment {
     public ArrayList<CheckBox> checkBoxArrayList = new ArrayList<>();
     public ArrayList<RadioButton> radioButtonArrayList = new ArrayList<>();
     public ArrayList<RadioButton> imageRadioButtonArrayList = new ArrayList<>();
+    private ArrayList<ImageView> checkImageViewArrayList = new ArrayList<>();
     public String radioAnswer;
     private String questionTitle;
     private String questionItemContent;
@@ -87,6 +90,12 @@ public class SurveyFragment extends Fragment {
         radioButton3 = (RadioButton) v.findViewById(R.id.radioButton3);
         radioButton2 = (RadioButton) v.findViewById(R.id.radioButton2);
         radioButton1 = (RadioButton) v.findViewById(R.id.radioButton1);
+        checkImageView1 = v.findViewById(R.id.checkImageView1);
+        checkImageView2 = v.findViewById(R.id.checkImageView2);
+        checkImageView3 = v.findViewById(R.id.checkImageView3);
+        checkImageView4 = v.findViewById(R.id.checkImageView4);
+        checkImageView5 = v.findViewById(R.id.checkImageView5);
+        checkImageView6 = v.findViewById(R.id.checkImageView6);
         imageRadioButton1 = v.findViewById(R.id.imageRadioButton1);
         imageRadioButton2 = v.findViewById(R.id.imageRadioButton2);
         imageRadioButton3 = v.findViewById(R.id.imageRadioButton3);
@@ -159,9 +168,19 @@ public class SurveyFragment extends Fragment {
         imageRadioButtonArrayList.add(imageRadioButton5);
         imageRadioButtonArrayList.add(imageRadioButton6);
 
+        checkImageViewArrayList.add(checkImageView1);
+        checkImageViewArrayList.add(checkImageView2);
+        checkImageViewArrayList.add(checkImageView3);
+        checkImageViewArrayList.add(checkImageView4);
+        checkImageViewArrayList.add(checkImageView5);
+        checkImageViewArrayList.add(checkImageView6);
+
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                for(int i =0; i<checkImageViewArrayList.size(); i++){
+                    checkImageViewArrayList.get(i).setVisibility(View.GONE);
+                }
                 if(checkedId == R.id.radioButton1){
                     radioAnswer = "1";
                 }else if(checkedId == R.id.radioButton2){
@@ -176,16 +195,22 @@ public class SurveyFragment extends Fragment {
                     radioAnswer = "6";
                 }
                 if(checkedId == R.id.imageRadioButton1){
+                    checkImageViewArrayList.get(0).setVisibility(View.VISIBLE);
                     radioAnswer = "1";
                 }else if(checkedId == R.id.imageRadioButton2){
+                    checkImageViewArrayList.get(1).setVisibility(View.VISIBLE);
                     radioAnswer = "2";
                 }else if(checkedId == R.id.imageRadioButton3){
+                    checkImageViewArrayList.get(2).setVisibility(View.VISIBLE);
                     radioAnswer = "3";
                 }else if(checkedId == R.id.imageRadioButton4){
+                    checkImageViewArrayList.get(3).setVisibility(View.VISIBLE);
                     radioAnswer = "4";
                 }else if(checkedId == R.id.imageRadioButton5){
+                    checkImageViewArrayList.get(4).setVisibility(View.VISIBLE);
                     radioAnswer = "5";
                 }else if(checkedId == R.id.imageRadioButton6){
+                    checkImageViewArrayList.get(5).setVisibility(View.VISIBLE);
                     radioAnswer = "6";
                 }
             }
@@ -317,7 +342,6 @@ public class SurveyFragment extends Fragment {
                                             Bitmap originalBitmap = BitmapFactory.decodeStream(bufferedInputStream);
                                             Bitmap resizedBitmap = Bitmap.createScaledBitmap(originalBitmap, 1000, 800, false);
                                             drawable = new BitmapDrawable(getResources(), resizedBitmap);
-                                            imageRadioButtonArrayList.get(radioButtonPosition).setButtonDrawable(drawable);
                                             //radioButtonArrayList.get(radioButtonPosition).setCompoundDrawables(0, bmp, 0, 0);
                                             inputStream.close();
                                             bufferedInputStream.close();
@@ -334,6 +358,7 @@ public class SurveyFragment extends Fragment {
                                 }catch(InterruptedException e){
                                     e.printStackTrace();
                                 }
+                            imageRadioButtonArrayList.get(radioButtonPosition).setButtonDrawable(drawable);
                             imageRadioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
                             radioButtonPosition++;
                         }

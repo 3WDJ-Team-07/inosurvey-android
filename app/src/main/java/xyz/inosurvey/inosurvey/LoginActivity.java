@@ -52,6 +52,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         if(jwtToken !=null){
             ActivityCompat.finishAffinity(this);
             jwtToken = preferences.getString("jwt", null);
+            Log.d(TAG, "로그인 하는 중 jwtToken : " +jwtToken);
             startActivity(new Intent(getApplicationContext(), MainActivity.class));
         }
         loginButton= findViewById(R.id.loginButton);
@@ -67,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         idText = idEditText.getText().toString();
         pwText = pwEditText.getText().toString();
         GetData g = new GetData();
-        g.getJson("http://172.26.4.86:8000/api/user/login");
+        g.getJson("http://54.180.121.254/api/user/login");
         //액티비티 destroy
         //ActivityCompat.finishAffinity(this);
     }
@@ -172,6 +173,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
+                    jwtToken = preferences.getString("jwt", null);
                     //Intent intent = new Intent(LoginActivity.this.getActivity(), MainActivity.class);
                     startActivity(new Intent(LoginActivity.this, MainActivity.class));
                     finish();
