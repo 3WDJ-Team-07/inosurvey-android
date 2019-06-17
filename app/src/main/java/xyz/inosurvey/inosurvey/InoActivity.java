@@ -49,7 +49,7 @@ public class InoActivity extends AppCompatActivity {
         inoListView.setLayoutManager(inoLayoutManager);
         inoDataSet = new ArrayList<>();
 
-        getInoList("http://54.180.121.254/api/user/wallet/receipt/all", "POST");
+        getInoList("http://172.26.2.77:8000/api/user/wallet/receipt/all", "POST");
 
     }
 

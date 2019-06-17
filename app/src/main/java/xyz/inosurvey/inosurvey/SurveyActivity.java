@@ -51,13 +51,14 @@ public class SurveyActivity extends AppCompatActivity {
     private String surveyTitle, surveyDescription, surveyCoin, surveyBackgrounColor;
     private int surveyID, surveyIsSale;
     public static int controlPosition=-1;   //질문 json의 번호 컨트롤 0 = 첫번째 질문의 json 파싱
-
+    public boolean responsive_filtering = true;
     private String getUserJSON;
     private int userID;
     private ArrayList<String> checkBoxAnswerArrayList;
     public String getSurveyJSON;
     public int questionNumber = 0;
     public int questionTypeId = 0;
+    public int questionFiltering = 0;
     public JSONObject surveyJSONObject = null;
     public JSONArray questionJSONArray = null;
     public int questionId = 0;
@@ -93,7 +94,7 @@ public class SurveyActivity extends AppCompatActivity {
         ab.setTitle("설문소개");
         ab.setDisplayHomeAsUpEnabled(true);
 
-        getUserJson("http://54.180.121.254/api/user/check", "POST");
+        getUserJson("http://172.26.2.77:8000/api/user/check", "POST");
 
         System.out.println(getUserJSON + "bbb");
 
@@ -231,13 +232,17 @@ public class SurveyActivity extends AppCompatActivity {
             }
             questionJSONObject = questionJSONArray.getJSONObject(controlPosition);
             questionId = questionJSONObject.getInt("id");
-            System.out.println("getParseJSON" + questionId);
+            System.out.println("getParseJSON's 질문 고유 번호 : " + questionId);
             questionTitle = questionJSONObject.getString("question_title");
-            System.out.println("getParseJSON" + questionTitle);
+            System.out.println("getParseJSON's 질문 제목 : " + questionTitle);
             questionNumber = questionJSONObject.getInt("question_number");
-            System.out.println("getParseJSON" + questionNumber);
+            System.out.println("getParseJSON's 타입 넘버 : " + questionNumber);
             questionTypeId = questionJSONObject.getInt("type_id");
-            System.out.println("getParseJSON" + questionTypeId);
+            System.out.println("getParseJSON's 타입 id : " + questionTypeId);
+            if(questionTypeId == 7){
+                questionFiltering = questionJSONObject.getJSONObject("filtering_item").getInt("item_id");
+            }
+            System.out.println("getParseJSON's 질문 필터링 번호 : " + questionFiltering);
             questionItemsJSONArray = questionJSONObject.getJSONArray("question_items");
         }catch(Exception e){
             e.printStackTrace();
@@ -268,6 +273,9 @@ public class SurveyActivity extends AppCompatActivity {
         }else if(questionTypeId == 6){
             String answer = sf.getRadioAnswer();
             answerArrayList.add(controlPosition, answer);
+        }else if(questionTypeId == 7){
+            String answer = sf.getType7Answer();
+            answerArrayList.add(controlPosition, answer);
         }
     }
 
@@ -277,6 +285,7 @@ public class SurveyActivity extends AppCompatActivity {
         try {
             resultSurveyJSON.put("user_id", userID);
             resultSurveyJSON.put("form_id", surveyID);
+            resultSurveyJSON.put("responsive_bool", responsive_filtering);
             JSONArray questionArray = new JSONArray();
             for(int i = 0; i<answerArrayList.size(); i++){
                 JSONObject pushItemObject = new JSONObject();
@@ -301,34 +310,49 @@ public class SurveyActivity extends AppCompatActivity {
 
 
     public void finishAlert(){
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("알림");
-        builder.setMessage("설문을 완료하시겠습니까?");
-        builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                DBHelper helper = new DBHelper(getApplicationContext(), "survey_list", null, 1);
-                SQLiteDatabase db = helper.getWritableDatabase();
-                String sql = "DELETE FROM survey_list WHERE id = " + surveyID;
-                db.execSQL(sql);
-                db.close();
-                helper.close();
-                controlPosition = -1;
-                postAnswerJSON("http://54.180.121.254/api/response/create", "POST");
-                Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
-                intent.putExtra("ino", surveyCoin);
-                startActivity(intent);
-                finish();
-            }
-        });
-        builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
+        if(responsive_filtering == false){
+            DBHelper helper = new DBHelper(getApplicationContext(), "survey_list", null, 1);
+            SQLiteDatabase db = helper.getWritableDatabase();
+            String sql = "DELETE FROM survey_list WHERE id = " + surveyID;
+            db.execSQL(sql);
+            db.close();
+            helper.close();
+            controlPosition = -1;
+            postAnswerJSON("http://172.26.2.77:8000/api/response/create", "POST");
+            Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
+            intent.putExtra("ino", surveyCoin);
+            startActivity(intent);
+            finish();
+        }else if(responsive_filtering == true){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("알림");
+            builder.setMessage("설문을 완료하시겠습니까?");
+            builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    DBHelper helper = new DBHelper(getApplicationContext(), "survey_list", null, 1);
+                    SQLiteDatabase db = helper.getWritableDatabase();
+                    String sql = "DELETE FROM survey_list WHERE id = " + surveyID;
+                    db.execSQL(sql);
+                    db.close();
+                    helper.close();
+                    controlPosition = -1;
+                    postAnswerJSON("http://172.26.2.77:8000/api/response/create", "POST");
+                    Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
+                    intent.putExtra("ino", surveyCoin);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+            builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
 
-            }
-        });
+                }
+            });
 
-        builder.show();
+            builder.show();
+        }
     }
 
         public void getSurveyItemJSON(String url, String method){
@@ -533,7 +557,7 @@ public class SurveyActivity extends AppCompatActivity {
                     return;
                 }
                 parseUserJSON();
-                getSurveyItemJSON("http://54.180.121.254/api/response/questions", "POST");
+                getSurveyItemJSON("http://172.26.2.77:8000/api/response/questions", "POST");
             }
         }
         GetDataJson g = new GetDataJson();
@@ -555,6 +579,15 @@ public class SurveyActivity extends AppCompatActivity {
     protected void onDestroy(){
         super.onDestroy();
         controlPosition=-1;
+    }
+
+    public void filteringFinishButton(){
+        finishButton.setVisibility(View.GONE);
+        nextButton.setVisibility(View.VISIBLE);
+    }
+    public void filteringNextButton(){
+        nextButton.setVisibility(View.GONE);
+        finishButton.setVisibility(View.VISIBLE);
     }
 
 }

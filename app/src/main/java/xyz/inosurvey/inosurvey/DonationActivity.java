@@ -122,7 +122,7 @@ public class DonationActivity  extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 giveINO = Integer.parseInt(editText.getText().toString());
-                postINO("http://54.180.121.254/api/donation/donate", "POST");
+                postINO("http://172.26.2.77:8000/api/donation/donate", "POST");
                 Toast.makeText(getApplicationContext(), giveINO +" 이노 기부하셨습니다.", Toast.LENGTH_SHORT).show();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt("user_ino", userINO-giveINO);

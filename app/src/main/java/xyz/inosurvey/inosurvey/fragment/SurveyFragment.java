@@ -178,13 +178,28 @@ public class SurveyFragment extends Fragment {
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
+                SurveyActivity sf= (SurveyActivity)getActivity();
                 for(int i =0; i<checkImageViewArrayList.size(); i++){
                     checkImageViewArrayList.get(i).setVisibility(View.GONE);
                 }
                 if(checkedId == R.id.radioButton1){
                     radioAnswer = "1";
+                    if(sf.questionTypeId == 7 && sf.questionFiltering == 1){
+                        sf.filteringFinishButton();
+                        sf.responsive_filtering = true;
+                    }else if(sf.questionTypeId == 7 && sf.questionFiltering == 2){
+                        sf.filteringNextButton();
+                        sf.responsive_filtering = false;
+                    }
                 }else if(checkedId == R.id.radioButton2){
                     radioAnswer = "2";
+                    if(sf.questionTypeId == 7 && sf.questionFiltering == 2){
+                        sf.filteringFinishButton();
+                        sf.responsive_filtering = true;
+                    }else if(sf.questionTypeId == 7 && sf.questionFiltering == 1){
+                        sf.filteringNextButton();
+                        sf.responsive_filtering = false;
+                    }
                 }else if(checkedId == R.id.radioButton3){
                     radioAnswer = "3";
                 }else if(checkedId == R.id.radioButton4){
@@ -285,6 +300,8 @@ public class SurveyFragment extends Fragment {
 
     public String getOpinionTextAnswer() { return opinionEditText.getText().toString(); }
 
+    public String getType7Answer() { return this.radioAnswer; }
+
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
@@ -295,36 +312,36 @@ public class SurveyFragment extends Fragment {
                         return;
                     }
                     titleTextView.setVisibility(View.VISIBLE);
-                    titleTextView.setText(((SurveyActivity)getActivity()).questionNumber + ". " + ((SurveyActivity)getActivity()).questionTitle);
+                    titleTextView.setText(sf.questionNumber + ". " + ((SurveyActivity)getActivity()).questionTitle);
                     JSONObject questionItemsJSONObject = null;
                     String questionItemContent = null;
                     if (((SurveyActivity)getActivity()).questionTypeId == 1) {
                         for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
-                            questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
+                            questionItemsJSONObject = sf.questionItemsJSONArray.getJSONObject(i);
                             questionItemContent = questionItemsJSONObject.getString("content");
                             radioButtonArrayList.get(radioButtonPosition).setText(questionItemContent);
                             radioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
                             radioButtonPosition++;
                         }
                         radioButtonPosition=0;
-                    } else if (((SurveyActivity)getActivity()).questionTypeId == 2) {
+                    } else if (sf.questionTypeId == 2) {
                         editText.setVisibility(View.VISIBLE);
-                    } else if (((SurveyActivity)getActivity()).questionTypeId == 3) {
+                    } else if (sf.questionTypeId == 3) {
                         int checkBoxPosition = 0;
-                        for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
-                            questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
+                        for (int i = 0; i <= sf.questionItemsJSONArray.length(); i++) {
+                            questionItemsJSONObject = sf.questionItemsJSONArray.getJSONObject(i);
                             questionItemContent = questionItemsJSONObject.getString("content");
                             checkBoxArrayList.get(checkBoxPosition).setText(questionItemContent);
                             checkBoxArrayList.get(checkBoxPosition).setVisibility(View.VISIBLE);
                             checkBoxPosition++;
                         }
-                    } else if (((SurveyActivity)getActivity()).questionTypeId == 4) {
+                    } else if (sf.questionTypeId == 4) {
                         ratingBar.setVisibility(View.VISIBLE);
-                    } else if (((SurveyActivity)getActivity()).questionTypeId == 5) {
+                    } else if (sf.questionTypeId == 5) {
                         opinionEditText.setVisibility(View.VISIBLE);
-                    }else if(((SurveyActivity)getActivity()).questionTypeId == 6){
-                        for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
-                            questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
+                    }else if(sf.questionTypeId == 6){
+                        for (int i = 0; i <= sf.questionItemsJSONArray.length(); i++) {
+                            questionItemsJSONObject = sf.questionItemsJSONArray.getJSONObject(i);
                             questionItemContent = questionItemsJSONObject.getString("content");
                             questionItemImage = questionItemsJSONObject.getString("content_image");
                             System.out.println(questionItemImage + " 이미지 url");
@@ -362,6 +379,15 @@ public class SurveyFragment extends Fragment {
                             imageRadioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
                             radioButtonPosition++;
                         }
+                    }else if(((SurveyActivity)getActivity()).questionTypeId == 7){
+                        for (int i = 0; i <= ((SurveyActivity)getActivity()).questionItemsJSONArray.length(); i++) {
+                            questionItemsJSONObject = ((SurveyActivity)getActivity()).questionItemsJSONArray.getJSONObject(i);
+                            questionItemContent = questionItemsJSONObject.getString("content");
+                            radioButtonArrayList.get(radioButtonPosition).setText(questionItemContent);
+                            radioButtonArrayList.get(radioButtonPosition).setVisibility(View.VISIBLE);
+                            radioButtonPosition++;
+                        }
+                        radioButtonPosition=0;
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();

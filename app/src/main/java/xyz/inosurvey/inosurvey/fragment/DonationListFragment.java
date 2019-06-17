@@ -60,7 +60,7 @@ public class DonationListFragment extends Fragment {
         View 객체를 이용해 함수 호출을 한다.
         ************************************************************************
         */
-        getDonationList("http://54.180.121.254/api/donation/index", "GET");
+        getDonationList("http://172.26.2.77:8000/api/donation/index", "GET");
         View v = inflater.inflate(R.layout.fragment_donation_list, container, false);
         donationView = v.findViewById(R.id.donationView);
 
