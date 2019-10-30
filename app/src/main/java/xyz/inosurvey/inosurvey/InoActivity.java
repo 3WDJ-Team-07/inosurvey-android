@@ -27,7 +27,7 @@ import xyz.inosurvey.inosurvey.adapter.InoAdapter;
 
 public class InoActivity extends AppCompatActivity {
 
-    private ActionBar actionBar;
+    //private ActionBar actionBar;
     private int userId;
     private RecyclerView inoListView;
     private RecyclerView.LayoutManager inoLayoutManager;
@@ -38,9 +38,9 @@ public class InoActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ino);
-        actionBar = getSupportActionBar();
-        actionBar.setTitle("상세 내역");
-        actionBar.setDisplayHomeAsUpEnabled(true);
+        //actionBar = getSupportActionBar();
+        //actionBar.setTitle("상세 내역");
+        //actionBar.setDisplayHomeAsUpEnabled(true);
 
         getUserId();
         inoListView = findViewById(R.id.inoListView);
@@ -49,7 +49,7 @@ public class InoActivity extends AppCompatActivity {
         inoListView.setLayoutManager(inoLayoutManager);
         inoDataSet = new ArrayList<>();
 
-        getInoList("http://172.26.2.77:8000/api/user/wallet/receipt/all", "POST");
+        getInoList("http://54.180.29.63/api/user/wallet/receipt/all", "POST");
 
     }
 

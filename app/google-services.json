@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1025641736106",
+    "firebase_url": "https://inosurvey.firebaseio.com",
+    "project_id": "inosurvey",
+    "storage_bucket": "inosurvey.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1025641736106:android:6ccb3ff910ff29c5",
+        "android_client_info": {
+          "package_name": "xyz.inosurvey.inosurvey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1025641736106-hal0t3pjen82otompcurac07j13ccsaf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9JYB3SJigWS1lZSQyWWAhkmt1NI2ZsgI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1025641736106-hal0t3pjen82otompcurac07j13ccsaf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

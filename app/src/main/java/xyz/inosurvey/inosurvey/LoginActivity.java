@@ -68,7 +68,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         idText = idEditText.getText().toString();
         pwText = pwEditText.getText().toString();
         GetData g = new GetData();
-        g.getJson("http://172.26.2.77:8000/api/user/login");
+        g.getJson("http://54.180.29.63/api/user/login");
         //액티비티 destroy
         //ActivityCompat.finishAffinity(this);
     }

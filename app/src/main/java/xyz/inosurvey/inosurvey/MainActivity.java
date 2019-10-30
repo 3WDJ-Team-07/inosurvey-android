@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity{
         loadFragment(new SurveyListFragment());
         bottomNavigationView = findViewById(R.id.bottom_navigation);
         //액션바 제목 지정
-        final ActionBar ab = getSupportActionBar();
-        ab.setTitle("설문 리스트");
+        //final ActionBar ab = getSupportActionBar();
+        //ab.hide();
         //textView = findViewById(R.id.textView);
 
         ComponentName componentName = new ComponentName(this, SurveyJobService.class);
@@ -65,22 +65,18 @@ public class MainActivity extends AppCompatActivity{
                     //설문 리스트
                     case R.id.bottom_survey_list:
                         fragment = new SurveyListFragment();
-                        ab.setTitle("설문 리스트");
                         break;
                     //마켓
                     case R.id.bottom_survey_donation:
                         fragment = new DonationListFragment();
-                        ab.setTitle("기부 리스트");
                         break;
                     //프로필
                     case R.id.bottom_survey_profile:
                         fragment = new ProfileFragment();
-                        ab.setTitle("마이 페이지");
                         break;
                     //세팅
                     case R.id.bottom_survey_setting:
                         fragment = new SettingFragment();
-                        ab.setTitle("옵션");
                         break;
                 }
                 return loadFragment(fragment);

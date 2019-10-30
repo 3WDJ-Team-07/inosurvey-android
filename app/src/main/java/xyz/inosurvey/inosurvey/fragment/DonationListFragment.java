@@ -60,7 +60,7 @@ public class DonationListFragment extends Fragment {
         View 객체를 이용해 함수 호출을 한다.
         ************************************************************************
         */
-        getDonationList("http://172.26.2.77:8000/api/donation/index", "GET");
+        getDonationList("http://54.180.29.63/api/donation/index", "GET");
         View v = inflater.inflate(R.layout.fragment_donation_list, container, false);
         donationView = v.findViewById(R.id.donationView);
 
@@ -204,7 +204,7 @@ public class DonationListFragment extends Fragment {
                 amountPercent = 0;
             }
             System.out.println(amount + "amount");
-            donationDataSet.add(new DonationData(imageDrawable, title, "남은 금액 : "+ amount, amountPercent , amountPercent+"%"));
+            donationDataSet.add(new DonationData(imageDrawable, title, "残り : "+ amount, amountPercent , amountPercent+"%"));
         }
     }
 

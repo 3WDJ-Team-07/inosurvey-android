@@ -92,7 +92,7 @@ public class SurveyListFragment extends Fragment {
             progressBarPercent = Math.round(count/number)*100;
             //System.out.println(percent + " " +  " " + "counting");
 
-            surveyListDataSet.add(new SurveyListData(title,"적립 코인", "마감 시간", coin, closedAt, percentText, progressBarPercent, R.drawable.coins, R.drawable.hourglass));
+            surveyListDataSet.add(new SurveyListData(title,"INO", "締め切り", coin, closedAt, percentText, progressBarPercent, R.drawable.list_ino, R.drawable.list_time));
         }
     }
 

@@ -9,6 +9,7 @@ import android.graphics.PorterDuff;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -37,10 +38,11 @@ import xyz.inosurvey.inosurvey.bean.DonationList;
 
 public class DonationActivity  extends AppCompatActivity {
 
-    ImageView imageView;
-    TextView introTextView;
+    ImageView imageView, logoImageView;
+    TextView introTextView, titleTextView, donationTextView;
     Button donationButton;
     EditText editText;
+    private String donateTitle;
     private int donateID;
     private Drawable imageDrawable;
     private String imageURL;
@@ -54,13 +56,17 @@ public class DonationActivity  extends AppCompatActivity {
 
         preferences = getSharedPreferences("jwt", MODE_PRIVATE);
         userINO = preferences.getInt("user_ino", -1);
+
         imageView = findViewById(R.id.imageView);
+        logoImageView = findViewById(R.id.logoImageView);
         introTextView = findViewById(R.id.introTextView);
+        titleTextView = findViewById(R.id.titleTextView);
+        donationTextView = findViewById(R.id.donationTextView);
         donationButton = findViewById(R.id.donationButton);
         editText = findViewById(R.id.editText);
-        ActionBar ab = getSupportActionBar();
-        ab.setTitle("기부하기");
-        ab.setDisplayHomeAsUpEnabled(true);
+        //ActionBar ab = getSupportActionBar();
+        //ab.hide();
+        //ab.setDisplayHomeAsUpEnabled(true);
         getDonationInformation();
 
         donationButton.setOnClickListener(new Button.OnClickListener() {
@@ -78,6 +84,7 @@ public class DonationActivity  extends AppCompatActivity {
         ArrayList<DonationList> donationListArray;
         donationListArray = intent.getParcelableArrayListExtra("data");
         donateID = donationListArray.get(listPosition).getId();
+        donateTitle = donationListArray.get(listPosition).getTitle();
         imageURL = donationListArray.get(listPosition).getImage();
         Thread thread = new Thread(){
             @Override
@@ -104,8 +111,14 @@ public class DonationActivity  extends AppCompatActivity {
             System.out.println("mzmzmz");
             e.printStackTrace();
         }
-        imageView.setImageDrawable(imageDrawable);
+        imageView.setBackground(imageDrawable);
+        imageView.setAdjustViewBounds(true);
+        titleTextView.setText(donateTitle);
+        //imageView.setBackground(imageDrawable);
         introTextView.setText(donationListArray.get(listPosition).getContent());
+        logoImageView.bringToFront();
+        donationTextView.bringToFront();
+        titleTextView.bringToFront();
     }
 
     public void finishAlert(){
@@ -122,7 +135,7 @@ public class DonationActivity  extends AppCompatActivity {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 giveINO = Integer.parseInt(editText.getText().toString());
-                postINO("http://172.26.2.77:8000/api/donation/donate", "POST");
+                postINO("http://54.180.29.63/api/donation/donate", "POST");
                 Toast.makeText(getApplicationContext(), giveINO +" 이노 기부하셨습니다.", Toast.LENGTH_SHORT).show();
                 SharedPreferences.Editor editor = preferences.edit();
                 editor.putInt("user_ino", userINO-giveINO);

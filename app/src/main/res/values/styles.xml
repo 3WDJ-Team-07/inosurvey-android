@@ -6,12 +6,18 @@
         <item name="colorPrimary">#2196f3</item>
         <item name="colorPrimaryDark">#2196f3</item>
         <item name="colorAccent">@color/colorAccent</item>
-
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
     </style>
 
     <style name="ProfileTextViewCustom" parent="@android:style/Widget.TextView">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="CustomRadioButton" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">#2196f3</item>
+        <item name="colorControlNormal">#2196f3</item>
     </style>
 
 </resources>

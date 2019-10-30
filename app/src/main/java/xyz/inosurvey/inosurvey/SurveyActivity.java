@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RatingBar;
@@ -43,9 +44,10 @@ import static android.widget.Toast.LENGTH_SHORT;
 public class SurveyActivity extends AppCompatActivity {
 
     private ViewPager viewPager;
+    private ImageView introCheckImage;
     private Button previousButton, nextButton, finishButton, startButton;
-    private TextView introTitleTextView, introContentTextView;
-    private ActionBar ab;
+    private TextView introTitleTextView, introContentTextView, surveyIntroText;
+    //private ActionBar ab;
     private ArrayList<SurveyList> surveyListArray = new ArrayList<>();
     private int listPosition;
     private String surveyTitle, surveyDescription, surveyCoin, surveyBackgrounColor;
@@ -76,6 +78,9 @@ public class SurveyActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey);
 
+        surveyIntroText = findViewById(R.id.surveyIntroText);
+        introCheckImage = findViewById(R.id.introCheckImage);
+        introCheckImage.bringToFront();
         introTitleTextView = findViewById(R.id.introTitleTextView);
         introContentTextView = findViewById(R.id.introContentTextView);
         viewPager = findViewById(R.id.viewPager);
@@ -84,17 +89,20 @@ public class SurveyActivity extends AppCompatActivity {
         finishButton = findViewById(R.id.finishButton);
         startButton = findViewById(R.id.startButton);
 
+        nextButton.bringToFront();
+        previousButton.bringToFront();
         getSurveyData();
 
         introTitleTextView.setText(surveyTitle);
         introContentTextView.setText(surveyDescription);
 
         //액션바 컨트롤
-        ab = getSupportActionBar();
-        ab.setTitle("설문소개");
-        ab.setDisplayHomeAsUpEnabled(true);
+        //ab = getSupportActionBar();
+        //ab.hide();
+       // ab.setTitle("설문소개");
+        //ab.setDisplayHomeAsUpEnabled(true);
 
-        getUserJson("http://172.26.2.77:8000/api/user/check", "POST");
+        getUserJson("http://54.180.29.63/api/user/check", "POST");
 
         System.out.println(getUserJSON + "bbb");
 
@@ -113,20 +121,16 @@ public class SurveyActivity extends AppCompatActivity {
                     previousButton.setVisibility(View.GONE);
                     nextButton.setVisibility(View.GONE);
                 }else if(position == 1){
-                    ab.setTitle("설문진행");
+                    surveyIntroText.setText("アンケート進行");
                     if(questionJSONArray.length() == 1){
                         startButton.setVisibility(View.GONE);
                         previousButton.setVisibility(View.GONE);
                         nextButton.setVisibility(View.GONE);
                         finishButton.setVisibility(View.VISIBLE);
-                        introTitleTextView.setVisibility(View.GONE);
-                        introContentTextView.setVisibility(View.GONE);
                     }else {
                         startButton.setVisibility(View.GONE);
                         previousButton.setVisibility(View.GONE);
                         nextButton.setVisibility(View.VISIBLE);
-                        introTitleTextView.setVisibility(View.GONE);
-                        introContentTextView.setVisibility(View.GONE);
                     }
                 } else if(position +1 == questionJSONArray.length()+1){
                     startButton.setVisibility(View.GONE);
@@ -177,6 +181,7 @@ public class SurveyActivity extends AppCompatActivity {
                 System.out.println("controlPosition's Value = " + controlPosition);
                 getParseJSON();
                 viewPager.setCurrentItem(currentPage + 1, false);
+                introContentTextView.setVisibility(View.GONE);
             }
         });
 
@@ -318,16 +323,16 @@ public class SurveyActivity extends AppCompatActivity {
             db.close();
             helper.close();
             controlPosition = -1;
-            postAnswerJSON("http://172.26.2.77:8000/api/response/create", "POST");
+            postAnswerJSON("http://54.180.29.63/api/response/create", "POST");
             Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
             intent.putExtra("ino", surveyCoin);
             startActivity(intent);
             finish();
         }else if(responsive_filtering == true){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("알림");
-            builder.setMessage("설문을 완료하시겠습니까?");
-            builder.setPositiveButton("확인", new DialogInterface.OnClickListener() {
+            builder.setTitle("お知らせ");
+            builder.setMessage("アンケートを完了しますか？");
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     DBHelper helper = new DBHelper(getApplicationContext(), "survey_list", null, 1);
@@ -337,14 +342,14 @@ public class SurveyActivity extends AppCompatActivity {
                     db.close();
                     helper.close();
                     controlPosition = -1;
-                    postAnswerJSON("http://172.26.2.77:8000/api/response/create", "POST");
+                    postAnswerJSON("http://54.180.29.63/api/response/create", "POST");
                     Intent intent = new Intent(getApplicationContext(), SurveyCompleteActivity.class);
                     intent.putExtra("ino", surveyCoin);
                     startActivity(intent);
                     finish();
                 }
             });
-            builder.setNegativeButton("취소", new DialogInterface.OnClickListener() {
+            builder.setNegativeButton("Cancle", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
 
@@ -363,7 +368,7 @@ public class SurveyActivity extends AppCompatActivity {
                 protected void onPreExecute(){
                     if(SurveyActivity.this.isFinishing() == false) {
                         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        progressDialog.setMessage("잠시만 기다려주세요.");
+                        progressDialog.setMessage("少々お待ちしてください");
                         progressDialog.show();
                         super.onPreExecute();
                     }
@@ -481,7 +486,7 @@ public class SurveyActivity extends AppCompatActivity {
                     con.setDefaultUseCaches(false);
                     OutputStream os = con.getOutputStream();
                     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                    System.out.println(postResultData.getBytes("utf-8") + "postResultDATA");
+                    //System.out.println(postResultData.getBytes("utf-8") + "postResultDATA");
                     writer.write("data="+postResultData);
                     //writer.write("user_id="+idText+"&password="+pwText);
                     writer.flush();
@@ -557,7 +562,7 @@ public class SurveyActivity extends AppCompatActivity {
                     return;
                 }
                 parseUserJSON();
-                getSurveyItemJSON("http://172.26.2.77:8000/api/response/questions", "POST");
+                getSurveyItemJSON("http://54.180.29.63/api/response/questions", "POST");
             }
         }
         GetDataJson g = new GetDataJson();

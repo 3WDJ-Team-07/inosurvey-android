@@ -104,7 +104,7 @@ public class SurveyFragment extends Fragment {
         imageRadioButton6 = v.findViewById(R.id.imageRadioButton6);
         titleTextView = (TextView) v.findViewById(R.id.titleTextVIew);
         ratingBar = (RatingBar) v.findViewById(R.id.ratingBar);
-;
+        ratingBar.bringToFront();
         ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
             @Override
             public void onRatingChanged(RatingBar ratingBar, float rating, boolean fromUser) {

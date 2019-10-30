@@ -51,7 +51,7 @@ public class SurveyJobService extends JobService {
         userID = preferences.getInt("user_id", -1);
         userINO = preferences.getInt("user_ino", -1);
         Log.d(TAG, "job started");
-        postToken("http://172.26.2.77:8000/api/user/check", "POST");
+        postToken("http://54.180.29.63/api/user/check", "POST");
         //doBackgroundWork(params);
         return true;
     }
@@ -111,8 +111,8 @@ public class SurveyJobService extends JobService {
                 System.out.println(getUserJSON + "opi");
                 if(getUserJSON != null) {
                     parseUserJSON();
-                    getUserINO("http://172.26.2.77:8000/api/user/wallet", "POST");
-                    getSurveyFormJson("http://172.26.2.77:8000/api/response/index", "POST", jobParams);
+                    getUserINO("http://54.180.29.63/api/user/wallet", "POST");
+                    getSurveyFormJson("http://54.180.29.63/api/response/index", "POST", jobParams);
                 }
             }
         }
@@ -283,8 +283,7 @@ public class SurveyJobService extends JobService {
                 id = surveyFormObject.getInt("id");
                 Log.d(TAG, "insertSurveyListJSON's get List in id = " +id);
                 title = surveyFormObject.getString("title");
-                coin = 500;
-                //coin = parseInt(surveyFormObject.getString("reward"));
+                coin = parseInt(surveyFormObject.getString("reward"));
                 description = surveyFormObject.getString("description");
                 respondentNumber = surveyFormObject.getInt("respondent_number");
                 respondentCount = surveyFormObject.getInt("respondent_count");

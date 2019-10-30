@@ -19,7 +19,7 @@ public class SurveyCompleteActivity extends AppCompatActivity {
     private ImageView logoImageView, inoImageView;
     private Button completeButton;
     private String ino;
-    private ActionBar actionBar;
+    //private ActionBar actionBar;
     private SharedPreferences preferences;
     private int userIno;
 
@@ -28,8 +28,8 @@ public class SurveyCompleteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_survey_complete);
 
-        actionBar = getSupportActionBar();
-        actionBar.setTitle("설문 완료");
+        //actionBar = getSupportActionBar();
+        //actionBar.setTitle("설문 완료");
 
         preferences = getSharedPreferences("jwt", MODE_PRIVATE);
         userIno = preferences.getInt("user_ino", -1);
@@ -47,7 +47,7 @@ public class SurveyCompleteActivity extends AppCompatActivity {
         editor.putInt("user_ino", userIno+Integer.parseInt(ino));
         editor.commit();
 
-        coinTextView.setText(ino +"이노");
+        coinTextView.setText(ino +" INO");
 
         completeButton.setOnClickListener(new View.OnClickListener() {
             @Override
