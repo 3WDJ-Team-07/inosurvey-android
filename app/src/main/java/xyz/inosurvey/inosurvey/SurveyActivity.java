@@ -121,7 +121,7 @@ public class SurveyActivity extends AppCompatActivity {
                     previousButton.setVisibility(View.GONE);
                     nextButton.setVisibility(View.GONE);
                 }else if(position == 1){
-                    surveyIntroText.setText("アンケート進行");
+                    surveyIntroText.setText("설문 진행");
                     if(questionJSONArray.length() == 1){
                         startButton.setVisibility(View.GONE);
                         previousButton.setVisibility(View.GONE);
@@ -330,8 +330,8 @@ public class SurveyActivity extends AppCompatActivity {
             finish();
         }else if(responsive_filtering == true){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setTitle("お知らせ");
-            builder.setMessage("アンケートを完了しますか？");
+            builder.setTitle("알림");
+            builder.setMessage("설문을 완료하시겠습니까?");
             builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
@@ -368,7 +368,7 @@ public class SurveyActivity extends AppCompatActivity {
                 protected void onPreExecute(){
                     if(SurveyActivity.this.isFinishing() == false) {
                         progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-                        progressDialog.setMessage("少々お待ちしてください");
+                        progressDialog.setMessage("잠시만 기다려주세요");
                         progressDialog.show();
                         super.onPreExecute();
                     }
